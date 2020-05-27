@@ -15,7 +15,6 @@ body {
 header {
     height: 80px;
     width: 100%;
-    padding: 0 30px;
     position: fixed;
     background-color: rgb(20, 20, 20);
     z-index: 3;
@@ -28,7 +27,7 @@ main {
 
 /* container */
 .container {
-    width: 95%;
+    width: 93%;
     height: 100%;
     margin: 0 auto;
 }
@@ -75,7 +74,6 @@ button#search-button {
     font-size: 20px;
     color: white;
     font-weight: 500;
-    padding: 0 30px;
 }
 
 .messaggio_ricerca.active {
