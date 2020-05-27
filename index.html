@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Boolflix</title>
+        <link rel="icon" href="img/icon-logo.png">
+        <script src="https://kit.fontawesome.com/34a507967b.js" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <!-- inizio header -->
+            <div class="container">
+                <div id="header-left">
+                    <img src="img/logo.png" alt="Boolflix">
+                </div>
+                <div id="header-right">
+                    <input type="text" placeholder="Cerca un film, serie TV...">
+                    <button id="search-button">Cerca</button>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="container">
+                <!-- elemento contenente un messaggio con le info della ricerca -->
+                <div class="messaggio_ricerca"></div>
+                <!-- container dei titoli restituiti dall API -->
+                <div id="film-tv-container"></div>
+            </div>
+        </main>
+        <!-- template per HANDLEBARS -->
+        <script id="film-tv-template" type="text/x-handlebars-template">
+            <div class="flip-card">
+                <div class= "flip-card-inner">
+                    <div class="copertina-container">
+                        <img src="{{img-album}}" alt="{{titolo_org}}">
+                    </div>
+                    <ul class="box-info">
+                        <li class="title">Titolo: <span>{{titolo}}</span></li>
+                        <li class="original_title">Titolo originale: <span>{{titolo_org}}</span></li>
+                        <li class="language">Lingua originale: <span>{{{lingua}}}</span></li>
+                        <li class="vote">Voto: </span>{{{voto}}}</span></li>
+                        <li class="overview">Descrizione: <span>{{overview}}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </script>
+        <script id="bandiera-template" type="text/x-handlebars-template">
+            <img src="img/flag_{{bandiera}}.png" alt="{{bandiera}}">
+        </script>
+        <script id="title-film-tv-template" type="text/x-handlebars-template">
+            <div class='titolo-ricerca'><h2>{{titolo_ricerca}}({{quantità_risultati}})</h2></div>
+        </script>
+        <!-- link js -->
+        <script src="main.js" charset="utf-8"></script>
+    </body>
+</html>
