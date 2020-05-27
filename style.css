@@ -88,7 +88,7 @@ button#search-button {
     z-index: 0;
 }
 
-#film-tv-container .titolo-ricerca {
+.titolo-ricerca {
     width: 100%;
     text-align: center;
     margin: 30px 0 15px 0;

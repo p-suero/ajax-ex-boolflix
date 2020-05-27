@@ -14,6 +14,7 @@ $(document).ready(function() {
     var template_general_title = $("#title-film-tv-template").html();
     //preparo la funzione al fine di utilizzare il template con handlebars
     var template_general_title_function = Handlebars.compile(template_general_title);
+
     // al click sul button effettuo la ricerca
     $("#search-button").click(ricerca);
 
@@ -51,7 +52,7 @@ $(document).ready(function() {
         $("#header-right input").val("");
         //rimuovo il valore del h2
         $("#film-tv-container .titolo-ricerca").remove();
-        //rimuovo i film visualizzati in pagina
+        //rimuovo i titoli visualizzati in pagina
         $("#film-tv-container .flip-card").remove();
     }
 
@@ -67,9 +68,9 @@ $(document).ready(function() {
                 "query": valore_input
             },
             "success": function(data) {
-                //setto i titoli del container alla chiamata ajax
+                //setto il messaggio di ricerca ed il titolo per genere alla chiamata ajax
                 titles_set(tipo,data,valore_input);
-                //gestisco i dati con la seguente funzione
+                //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
             },
             "error": function() {
@@ -85,12 +86,12 @@ $(document).ready(function() {
         for (var i = 0; i < data.results.length; i++) {
             //seleziono il film corrente
             var elemento_corrente = risultati[i];
-            //aggiungo i film risultanti dalla ricerca in pagina
-            aggiungi_film(elemento_corrente,tipo);
+            //aggiungo il titolo corrente nel ciclo
+            aggiungi_titolo(elemento_corrente,tipo);
         }
     }
 
-    function aggiungi_film(elemento_corrente,tipo) {
+    function aggiungi_titolo(elemento_corrente,tipo) {
         //creo l'oggetto per popolare il template
         var context = {
             "img-album" : img(elemento_corrente.poster_path),
@@ -109,10 +110,16 @@ $(document).ready(function() {
         noempty();
     }
 
+    function voto_transform(voto) {
+        //trasformo il valore "voto" dell oggetto in un numero intero da 1 a 5(arrotondo per eccesso)
+        var voto_transform = Math.ceil(voto / 2);
+        return voto_transform
+    }
+
     function star(voto_transform) {
         //desgigno la variabile stella
         var voto_finale = "";
-        //se la variabile è vuota stampo le bandiere
+        //se la variabile è diversa da 0, stampo le bandiere
         if (voto_transform != 0) {
             //stampo le bandiere
             for (var i = 0; i < 5; i++) {
@@ -130,18 +137,12 @@ $(document).ready(function() {
         return voto_finale
     }
 
-    function voto_transform(voto) {
-        //trasformo il valore "voto" dell oggetto in un numero intero da 1 a 5(arrotondo per eccesso)
-        var voto_transform = Math.ceil(voto / 2);
-        return voto_transform
-    }
-
     function flag(lingua) {
-        //definisco un array di bandiere disponibili in locale
+        //definisco un array di bandiere disponibili in memoria locale
         var bandiere_in_datab = ["de", "en", "es", "fr", "fr", "it"];
         //controllo se alla lingua corrisponde una bandiera salvata in locale
         if (bandiere_in_datab.includes(lingua)) {
-            //costruisco la funzione handlebars con l'oggettoe
+            //costruisco la funzione handlebars con l'oggetto
             var bandiera = {"bandiera" : lingua};
             var html_finale = template_bandiera_function(bandiera);
             //non c'è bisogno di fare un else in quanto se si entra nella condizione il return chiude la funzione
@@ -153,7 +154,7 @@ $(document).ready(function() {
     function no_title_repeat(elemento_corrente,tipo) {
         //creo una variabile titolo vuota
         var titolo = "";
-        //se sto cercando un film o una serie TV ed il titolo è diverso dal titolo originale entro nella condizione
+        //se sto cercando un film o una serie TV ed il titolo è diverso dal titolo originale entro nella condizione e lo stampo
         if (tipo == tipo_ricerca[0] && elemento_corrente.title != elemento_corrente.original_title) {
             titolo = elemento_corrente.title;
         } else if (tipo == tipo_ricerca[1] && elemento_corrente.name != elemento_corrente.original_name) {
@@ -163,14 +164,14 @@ $(document).ready(function() {
     }
 
     function titles_set(tipo,data,input) {
-        //aggiungo classe active all'elemento che stampa il valore della ricerca e gli inserisco il valore dell'input
+        //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
         if (data.results.length != 0) {
             $(".messaggio_ricerca").addClass("active").text("Risultati ricerca per: '" + input + "'");
         } else {
             $(".messaggio_ricerca").addClass("active").text("Ci dispiace, ma non abbiamo riscontri per il titolo: '" + input + "'");
         }
 
-        //setto il titolo che indica il genere delle card
+        //setto il titolo che indica il genere delle card ed il numero di risultati
         if (data.results.length > 0) {
             //aggiungo il titolo con il tipo di ricerca effettuata
             if (tipo == tipo_ricerca[0]) {
@@ -178,6 +179,7 @@ $(document).ready(function() {
             } else {
                 var titolo_ricerca = "Serie TV";
             }
+            //creo l'oggetto essenziale per handlebars
             var placeholder = {
                 "titolo_ricerca" : titolo_ricerca,
                 "quantità_risultati" : data.results.length
@@ -205,9 +207,9 @@ $(document).ready(function() {
     function img(poster_path) {
         //designo una variabile con l'immagine in caso di valore nullo
         var img_finale = "img/img_null.png"
-        //se il valore dell' api non è nullo stampo l'immagine dell'api
+        //se il valore dell'api non è nullo stampo l'immagine dell'api
         if (poster_path != null) {
-            //costruisco l'utl
+            //costruisco l'url
             var url_iniziale = "https://image.tmdb.org/t/p/";
             var img_width = "w342";
             var url_coda = poster_path;
@@ -217,10 +219,10 @@ $(document).ready(function() {
     }
 
     function overview(overview) {
-        //designo una variabile con desceizione vuota nel caso in cui non venga data dall'api
+        //designo una variabile con descrizione vuota nel caso in cui non venga data dall'api
         var descrizione_fin = "";
         if (overview.length != 0) {
-            //se la descrizione è maggiore della sottostringa aggiungo i puntini
+            //se i caratteri della descrizione sono maggiore di quelli della sottostringa aggiungo i puntini
             if (overview.length > 100) {
                 descrizione_fin =  overview.substr(0,100) + "...";
             } else {
@@ -232,12 +234,12 @@ $(document).ready(function() {
     }
 
     function noempty () {
-        //verifico se il valore dell'overview ha testo
+        //se il valore dell'overview ha testo aggiungo a questa display none
         if ($(".flip-card:last-of-type .overview span").text() == "") {
             $(".flip-card:last-of-type .overview").addClass("d_none");
         }
 
-        //verifico se il valore del titlo ha testo
+        //faccio lo stesso per il titolo
         if ($(".flip-card:last-of-type .title span").text() == "") {
             $(".flip-card:last-of-type .title").addClass("d_none");
         }
