@@ -153,17 +153,11 @@ $(document).ready(function() {
     function no_title_repeat(elemento_corrente,tipo) {
         //creo una variabile titolo vuota
         var titolo = "";
-        //se sto cercando un film entro nella condizione
-        if (tipo == tipo_ricerca[0]) {
-            //se il titolo è diverso da quello originario lo stampo
-            if (elemento_corrente.title != elemento_corrente.original_title) {
-                titolo = elemento_corrente.title;
-            }
-        } else {
-            //altrimenti sto cercando una serie TV e rifazzio la condizione
-            if (elemento_corrente.name != elemento_corrente.original_name) {
-                titolo = elemento_corrente.name;
-            }
+        //se sto cercando un film o una serie TV ed il titolo è diverso dal titolo originale entro nella condizione
+        if (tipo == tipo_ricerca[0] && elemento_corrente.title != elemento_corrente.original_title) {
+            titolo = elemento_corrente.title;
+        } else if (tipo == tipo_ricerca[1] && elemento_corrente.name != elemento_corrente.original_name) {
+            titolo = elemento_corrente.name;
         }
         return titolo
     }
