@@ -68,8 +68,10 @@ $(document).ready(function() {
                 "query": valore_input
             },
             "success": function(data) {
-                //setto il messaggio di ricerca ed il titolo per genere alla chiamata ajax
-                titles_set(tipo,data,valore_input);
+                //setto il messaggio di ricerca
+                messaggio_ricerca_set(data,valore_input);
+                //setto il titolo per genere alla chiamata ajax
+                titolo_ricerca_set(data,tipo)
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo,url);
             },
@@ -87,7 +89,7 @@ $(document).ready(function() {
             //seleziono il film corrente
             var elemento_corrente = risultati[i];
             //aggiungo la card corrente all'HTML
-            agg_card(elemento_corrente,tipo);
+            agg_card(elemento_corrente,tipo,data);
         }
     }
 
@@ -109,6 +111,11 @@ $(document).ready(function() {
         //evito di inserire in pagina elementi con testo vuoto
         noempty(elemento_corrente.id);
 
+        //effettuo la chiamata ajax per ottenere il cast
+        chiamata_ajax_cast(elemento_corrente,tipo)
+    }
+
+    function chiamata_ajax_cast(elemento_corrente,tipo) {
         $.ajax({
             "url":"https://api.themoviedb.org/3/" + tipo + "/" + elemento_corrente.id + "/credits",
             "method": "GET",
@@ -116,38 +123,41 @@ $(document).ready(function() {
                 "api_key": "0d50f7bd14a0021b20cb277c8174b873",
             },
             "success": function(data) {
-                //creo una variabile dell'array restituito dall API
-                var array_cast_api = data.cast;
-                //creo la condizione per evitare di entrare in array vuote
-                if (array_cast_api.length != 0) {
-                    // console.log("ciao");
-                    //definisco la condizione del ciclo
-                    var condizione = array_cast_api.length;
-                    if (array_cast_api.length > 5) {
-                        condizione = 5
-                    }
-                    //creo l'array dove salvare gli attori
-                    var cast = [];
-                    //avvio il ciclo for secondo il valore della condizione
-                    for (var i = 0; i < condizione; i++) {
-                        cast.push(array_cast_api[i].name);
-                    }
-
-                    //trasformo l'array in una stringa
-                    var stringa_cast = cast.join(" - ");
-
-                    //inserisco in card il cast
-                    $(".flip-card[data-id=" + elemento_corrente.id + "]").find(".cast span").text(stringa_cast);
-                }
-                //aggiungo display none alle liste-cast in cui l'API non mi fornisce il dato
-                if ($(".flip-card[data-id='" + elemento_corrente.id + "'] .cast span").text() == "") {
-                    $(".flip-card[data-id='" + elemento_corrente.id + "'] .cast").addClass("d_none");
-                }
+                gestisci_cast(data, elemento_corrente)
             },
             "error": function() {
                 alert("Si è verificato un errore");
             }
         })
+    }
+
+    function gestisci_cast(data, elemento_corrente) {
+        //creo una variabile dell'array restituito dall API
+        var array_cast_api = data.cast;
+        //se l'array restituito dall' API non è vuoto recupero il cast
+        if (array_cast_api.length != 0) {
+            // console.log("ciao");
+            //definisco la condizione del ciclo
+            var condizione = array_cast_api.length;
+            if (array_cast_api.length > 5) {
+                condizione = 5
+            }
+            //creo l'array dove salvare gli attori
+            var cast = [];
+            //avvio il ciclo for secondo il valore della condizione
+            for (var i = 0; i < condizione; i++) {
+                cast.push(array_cast_api[i].name);
+            }
+
+            //trasformo l'array in una stringa
+            var stringa_cast = cast.join(" - ");
+
+            //inserisco in card il cast
+            $(".flip-card[data-id=" + elemento_corrente.id + "]").find(".cast span").text(stringa_cast);
+        } else {
+            //altrimenti nascondo l'elemento vuoto in pagina
+            $(".flip-card[data-id='" + elemento_corrente.id + "'] .cast").addClass("d_none");
+        }
     }
 
     function voto_transform(voto) {
@@ -179,9 +189,9 @@ $(document).ready(function() {
 
     function flag(lingua) {
         //definisco un array di bandiere disponibili in memoria locale
-        var bandiere_in_datab = ["de", "en", "es", "fr", "fr", "it"];
+        var bandiere_in_locale = ["de", "en", "es", "fr", "fr", "it"];
         //controllo se alla lingua corrisponde una bandiera salvata in locale
-        if (bandiere_in_datab.includes(lingua)) {
+        if (bandiere_in_locale.includes(lingua)) {
             //costruisco la funzione handlebars con l'oggetto
             var bandiera = {"bandiera" : lingua};
             var html_finale = template_bandiera_function(bandiera);
@@ -203,14 +213,16 @@ $(document).ready(function() {
         return titolo
     }
 
-    function titles_set(tipo,data,input) {
+    function messaggio_ricerca_set(data,input) {
         //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
         if (data.results.length != 0) {
             $(".messaggio_ricerca").addClass("active").text("Risultati ricerca per: '" + input + "'");
         } else {
             $(".messaggio_ricerca").addClass("active").text("Ci dispiace, ma non abbiamo riscontri per il titolo: '" + input + "'");
         }
+    }
 
+    function titolo_ricerca_set(data,tipo) {
         //setto il titolo che indica il genere delle card ed il numero di risultati
         if (data.results.length > 0) {
             //aggiungo il titolo con il tipo di ricerca effettuata
@@ -262,9 +274,10 @@ $(document).ready(function() {
         //designo una variabile con la trama vuota nel caso in cui non venga data dall'api
         var trama_fin = "";
         if (overview.length != 0) {
+            var caratteri_max = 150;
             //se i caratteri della descrizione sono maggiore di quelli della sottostringa aggiungo i puntini
-            if (overview.length > 180) {
-                trama_fin =  overview.substr(0,180) + "...";
+            if (overview.length > caratteri_max) {
+                trama_fin =  overview.substr(0,caratteri_max) + "...";
             } else {
                 //altrimenti la stampo cosi com'è
                 trama_fin = overview;
