@@ -107,7 +107,7 @@ button#search-button {
     cursor: pointer;
 }
 
-/* aggiungo altezza dichiarate perché i contenitori con position absolute si adattano al contenuto */
+/* aggiungo dimensioni al 100% perché i contenitori con position absolute si adattano al contenuto */
 .flip-card-inner,
 .flip-card .card-front,
 .flip-card .card-front img,

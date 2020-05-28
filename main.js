@@ -18,7 +18,7 @@ $(document).ready(function() {
     // al click sul button effettuo la ricerca
     $("#search-button").click(ricerca);
 
-    //al premere del pulsante invio effettuo la ricerca
+    //al premere del pulsante invio, effettuo la ricerca
     $("#header-right input").keypress(function() {
         if (event.which == 13) {
             ricerca();
@@ -52,12 +52,12 @@ $(document).ready(function() {
         $("#header-right input").val("");
         //rimuovo il valore del h2
         $("#film-tv-container .titolo-ricerca").remove();
-        //rimuovo i titoli visualizzati in pagina
+        //rimuovo le card visualizzate in pagina
         $("#film-tv-container .flip-card").remove();
     }
 
     function chiamata_ajax_card(url,valore_input,tipo) {
-        //variabile per l'url serie
+        //variabile che compone l'url
         var url = url + tipo;
         $.ajax({
             "url": url,
@@ -71,7 +71,7 @@ $(document).ready(function() {
                 //setto il messaggio di ricerca
                 messaggio_ricerca_set(data,valore_input);
                 //setto il titolo per genere alla chiamata ajax
-                titolo_ricerca_set(data,tipo)
+                titolo_ricerca_set(data,tipo);
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo,url);
             },
@@ -84,11 +84,11 @@ $(document).ready(function() {
     function gestione_dati(data,tipo,url) {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
-        //creo un ciclo for per scorrere i film all'interno dell'array "results"
+        //creo un ciclo for per scorrere i titoli all'interno dell'array "results"
         for (var i = 0; i < data.results.length; i++) {
-            //seleziono il film corrente
+            //seleziono il titolo corrente
             var elemento_corrente = risultati[i];
-            //aggiungo la card corrente all'HTML
+            //aggiungo il titolo corrente all'HTML
             agg_card(elemento_corrente,tipo,data);
         }
     }
@@ -111,12 +111,11 @@ $(document).ready(function() {
 
         //evito di inserire il titolo vuoto attraverso una funzione apposita
         no_li_empty(elemento_corrente.id,"title");
-
         //faccio lo stesso per l overview
-        no_li_empty(elemento_corrente.id, "overview")
+        no_li_empty(elemento_corrente.id, "overview");
 
         //effettuo la chiamata ajax per ottenere il cast
-        chiamata_ajax_cast(elemento_corrente,tipo)
+        chiamata_ajax_cast(elemento_corrente,tipo);
     }
 
     function chiamata_ajax_cast(elemento_corrente,tipo) {
@@ -127,7 +126,7 @@ $(document).ready(function() {
                 "api_key": "0d50f7bd14a0021b20cb277c8174b873",
             },
             "success": function(data) {
-                gestisci_cast(data, elemento_corrente)
+                gestisci_cast(data, elemento_corrente);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -140,11 +139,10 @@ $(document).ready(function() {
         var array_cast_api = data.cast;
         //se l'array restituito dall' API non è vuoto recupero il cast
         if (array_cast_api.length != 0) {
-            // console.log("ciao");
             //definisco la condizione del ciclo
             var condizione = array_cast_api.length;
             if (array_cast_api.length > 5) {
-                condizione = 5
+                condizione = 5;
             }
             //creo l'array dove salvare gli attori
             var cast = [];
@@ -152,16 +150,19 @@ $(document).ready(function() {
             for (var i = 0; i < condizione; i++) {
                 cast.push(array_cast_api[i].name);
             }
-
             //trasformo l'array in una stringa
             var stringa_cast = cast.join(" - ");
-
-            //inserisco in card il cast
-            $(".flip-card[data-id=" + elemento_corrente.id + "]").find(".cast span").text(stringa_cast);
+            //aggiungo il cast alla card
+            aggiungi_cast(elemento_corrente.id, stringa_cast);
         } else {
             //altrimenti nascondo l'elemento vuoto in pagina
             no_li_empty(elemento_corrente.id, "cast");
         }
+    }
+
+    function aggiungi_cast(id,testo) {
+        //inserisco in card il cast
+        $(".flip-card[data-id=" + id + "]").find(".cast span").text(testo);
     }
 
     function voto_transform(voto) {
@@ -173,9 +174,9 @@ $(document).ready(function() {
     function star(voto_transform) {
         //desgigno la variabile stella
         var voto_finale = "";
-        //se la variabile è diversa da 0, stampo le bandiere
+        //se la variabile è diversa da 0, stampo le stelle
         if (voto_transform != 0) {
-            //stampo le bandiere
+            //stampo le stelle attraverso un ciclo for per determinare il numero di queste
             for (var i = 0; i < 5; i++) {
                 //se la i = al numero compreso nel voto, stampo la stella piena
                 if (i < voto_transform) {
@@ -227,7 +228,7 @@ $(document).ready(function() {
     }
 
     function titolo_ricerca_set(data,tipo) {
-        //setto il titolo che indica il genere delle card ed il numero di risultati
+        //setto il titolo per genere che indica anche il numero di risulati ottenuti e visualizzati 
         if (data.results.length > 0) {
             //aggiungo il titolo con il tipo di ricerca effettuata
             if (tipo == tipo_ricerca[0]) {
@@ -250,7 +251,7 @@ $(document).ready(function() {
     }
 
     function title_org(elemento_corrente, tipo) {
-        //setto il titolo da visualizzare dato che le due chiamate ajax hanno una chiave diversa per il titolo originale
+        //setto il titolo della card da visualizzare dato che le due chiamate ajax hanno una chiave diversa per il titolo originale
         var titolo_org;
         if (tipo == tipo_ricerca[0]) {
             titolo_org = elemento_corrente.original_title;
@@ -262,7 +263,7 @@ $(document).ready(function() {
 
     function img(poster_path) {
         //designo una variabile con l'immagine in caso di valore nullo
-        var img_finale = "img/img_null.png"
+        var img_finale = "img/img_null.png";
         //se il valore dell'api non è nullo stampo l'immagine dell'api
         if (poster_path != null) {
             //costruisco l'url
@@ -287,11 +288,11 @@ $(document).ready(function() {
                 trama_fin = overview;
             }
         }
-        return trama_fin;
+        return trama_fin
     }
 
     function no_li_empty(id, tipo_info) {
-        //se il valore dell'overview ha testo aggiungo a questa display none
+        //se il valore dell'overview ha testo, aggiungo a questa display none
         if ($(".flip-card[data-id='" + id + "'] ." + tipo_info + " span").text() == "") {
             $(".flip-card[data-id='" + id + "'] ." + tipo_info).addClass("d_none");
         }
