@@ -41,9 +41,9 @@ $(document).ready(function() {
             //url base
             var url = "https://api.themoviedb.org/3/search/";
             //effettuo la chiamata ajax per i film
-            card_chiamata_ajax(url,input_ricerca,tipo_ricerca[0]);
+            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[0]);
             //effettuo la chiamata ajax per le serie tv
-            card_chiamata_ajax(url,input_ricerca,tipo_ricerca[1]);
+            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[1]);
         }
     }
 
@@ -56,7 +56,7 @@ $(document).ready(function() {
         $("#film-tv-container .flip-card").remove();
     }
 
-    function card_chiamata_ajax(url,valore_input,tipo) {
+    function chiamata_ajax_card(url,valore_input,tipo) {
         //variabile per l'url serie
         var url = url + tipo;
         $.ajax({
@@ -86,12 +86,12 @@ $(document).ready(function() {
         for (var i = 0; i < data.results.length; i++) {
             //seleziono il film corrente
             var elemento_corrente = risultati[i];
-            //aggiungo il titolo corrente nel ciclo
-            aggiungi_card(elemento_corrente,tipo);
+            //aggiungo la card corrente all'HTML
+            agg_card(elemento_corrente,tipo);
         }
     }
 
-    function aggiungi_card(elemento_corrente,tipo) {
+    function agg_card(elemento_corrente,tipo) {
         //creo l'oggetto per popolare il template
         var context = {
             "img-album" : img(elemento_corrente.poster_path),
@@ -236,13 +236,13 @@ $(document).ready(function() {
 
     function noempty (id) {
         //se il valore dell'overview ha testo aggiungo a questa display none
-        if ($(".flip-card[data-id=" + id + "] .overview span").text() == "") {
-            $(".flip-card[data-id=" + id + "] .overview").addClass("d_none");
+        if ($(".flip-card[data-id='" + id + "'] .overview span").text() == "") {
+            $(".flip-card[data-id='" + id + "'] .overview").addClass("d_none");
         }
 
         //faccio lo stesso per il titolo
-        if ($(".flip-card[data-id=" + id + "] .title span").text() == "") {
-            $(".flip-card[data-id=" + id + "] .title").addClass("d_none");
+        if ($(".flip-card[data-id='" + id + "'] .title span").text() == "") {
+            $(".flip-card[data-id='" + id + "'] .title").addClass("d_none");
         }
     }
 })
