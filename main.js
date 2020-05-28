@@ -91,7 +91,7 @@ $(document).ready(function() {
         }
     }
 
-    function aggiungi_card(elemento_corrente,tipo,url) {
+    function aggiungi_card(elemento_corrente,tipo) {
         //creo l'oggetto per popolare il template
         var context = {
             "img-album" : img(elemento_corrente.poster_path),
