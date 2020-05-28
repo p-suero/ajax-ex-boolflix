@@ -41,9 +41,9 @@ $(document).ready(function() {
             //url base
             var url = "https://api.themoviedb.org/3/search/";
             //effettuo la chiamata ajax per i film
-            chiamata_ajax(url,input_ricerca,tipo_ricerca[0]);
+            card_chiamata_ajax(url,input_ricerca,tipo_ricerca[0]);
             //effettuo la chiamata ajax per le serie tv
-            chiamata_ajax(url,input_ricerca,tipo_ricerca[1]);
+            card_chiamata_ajax(url,input_ricerca,tipo_ricerca[1]);
         }
     }
 
@@ -56,7 +56,7 @@ $(document).ready(function() {
         $("#film-tv-container .flip-card").remove();
     }
 
-    function chiamata_ajax(url,valore_input,tipo) {
+    function card_chiamata_ajax(url,valore_input,tipo) {
         //variabile per l'url serie
         var url = url + tipo;
         $.ajax({
@@ -71,7 +71,7 @@ $(document).ready(function() {
                 //setto il messaggio di ricerca ed il titolo per genere alla chiamata ajax
                 titles_set(tipo,data,valore_input);
                 //gestisco i dati della chiamata ajax
-                gestione_dati(data,tipo);
+                gestione_dati(data,tipo,url);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -79,7 +79,7 @@ $(document).ready(function() {
         })
     }
 
-    function gestione_dati(data,tipo) {
+    function gestione_dati(data,tipo,url) {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
         //creo un ciclo for per scorrere i film all'interno dell'array "results"
@@ -87,11 +87,11 @@ $(document).ready(function() {
             //seleziono il film corrente
             var elemento_corrente = risultati[i];
             //aggiungo il titolo corrente nel ciclo
-            aggiungi_titolo(elemento_corrente,tipo);
+            aggiungi_card(elemento_corrente,tipo);
         }
     }
 
-    function aggiungi_titolo(elemento_corrente,tipo) {
+    function aggiungi_card(elemento_corrente,tipo,url) {
         //creo l'oggetto per popolare il template
         var context = {
             "img-album" : img(elemento_corrente.poster_path),
@@ -99,7 +99,8 @@ $(document).ready(function() {
             "titolo_org" : title_org(elemento_corrente, tipo),
             "lingua" : flag(elemento_corrente.original_language),
             "voto" : star(voto_transform(elemento_corrente.vote_average)),
-            "overview" : overview(elemento_corrente.overview)
+            "overview" : overview(elemento_corrente.overview),
+            "id" : elemento_corrente.id
         }
         //inserisco le proprietà dell'oggetto nella funzione di Handlebars
         var html_finale = template_function(context);
@@ -107,7 +108,7 @@ $(document).ready(function() {
         $("#film-tv-container").append(html_finale);
 
         //evito di inserire in pagina elementi con testo vuoto
-        noempty();
+        noempty(elemento_corrente.id);
     }
 
     function voto_transform(voto) {
@@ -233,15 +234,15 @@ $(document).ready(function() {
         return trama_fin;
     }
 
-    function noempty () {
+    function noempty (id) {
         //se il valore dell'overview ha testo aggiungo a questa display none
-        if ($(".flip-card:last-of-type .overview span").text() == "") {
-            $(".flip-card:last-of-type .overview").addClass("d_none");
+        if ($(".flip-card[data-id=" + id + "] .overview span").text() == "") {
+            $(".flip-card[data-id=" + id + "] .overview").addClass("d_none");
         }
 
         //faccio lo stesso per il titolo
-        if ($(".flip-card:last-of-type .title span").text() == "") {
-            $(".flip-card:last-of-type .title").addClass("d_none");
+        if ($(".flip-card[data-id=" + id + "] .title span").text() == "") {
+            $(".flip-card[data-id=" + id + "] .title").addClass("d_none");
         }
     }
 })
