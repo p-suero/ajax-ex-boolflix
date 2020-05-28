@@ -85,7 +85,7 @@ $(document).ready(function() {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
         //creo un ciclo for per scorrere i titoli all'interno dell'array "results"
-        for (var i = 0; i < data.results.length; i++) {
+        for (var i = 0; i < risultati.length; i++) {
             //seleziono il titolo corrente
             var elemento_corrente = risultati[i];
             //aggiungo il titolo corrente all'HTML
