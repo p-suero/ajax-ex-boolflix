@@ -37,13 +37,13 @@ $(document).ready(function() {
             //resetto l'input e svuoto la pagina
             reset();
             //designo l' array contenente i valori dell "URL" ovvero delle ricerche possibili
-            tipo_ricerca = ["movie", "tv"];
+            var tipo_ricerca = ["movie", "tv"];
             //url base
             var url = "https://api.themoviedb.org/3/search/";
             //effettuo la chiamata ajax per i film
-            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[0]);
+            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[0],tipo_ricerca);
             //effettuo la chiamata ajax per le serie tv
-            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[1]);
+            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[1],tipo_ricerca);
         }
     }
 
@@ -56,7 +56,7 @@ $(document).ready(function() {
         $("#film-tv-container .flip-card").remove();
     }
 
-    function chiamata_ajax_card(url,valore_input,tipo) {
+    function chiamata_ajax_card(url,valore_input,tipo,tipo_ricerca) {
         //variabile che compone l'url
         var url = url + tipo;
         $.ajax({
@@ -71,9 +71,9 @@ $(document).ready(function() {
                 //setto il messaggio di ricerca
                 messaggio_ricerca_set(data,valore_input);
                 //setto il titolo per genere alla chiamata ajax
-                titolo_ricerca_set(data,tipo);
+                titolo_ricerca_set(data,tipo,tipo_ricerca);
                 //gestisco i dati della chiamata ajax
-                gestione_dati(data,tipo,url);
+                gestione_dati(data,tipo,url,tipo_ricerca);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -81,7 +81,7 @@ $(document).ready(function() {
         })
     }
 
-    function gestione_dati(data,tipo,url) {
+    function gestione_dati(data,tipo,url,tipo_ricerca) {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
         //creo un ciclo for per scorrere i titoli all'interno dell'array "results"
@@ -89,16 +89,16 @@ $(document).ready(function() {
             //seleziono il titolo corrente
             var elemento_corrente = risultati[i];
             //aggiungo il titolo corrente all'HTML
-            agg_card(elemento_corrente,tipo,data);
+            agg_card(elemento_corrente,tipo,tipo_ricerca);
         }
     }
 
-    function agg_card(elemento_corrente,tipo) {
+    function agg_card(elemento_corrente,tipo,tipo_ricerca) {
         //creo l'oggetto per popolare il template
         var context = {
             "img-album" : img(elemento_corrente.poster_path),
-            "titolo" : no_title_repeat(elemento_corrente,tipo),
-            "titolo_org" : title_org(elemento_corrente, tipo),
+            "titolo" : no_title_repeat(elemento_corrente,tipo,tipo_ricerca),
+            "titolo_org" : title_org(elemento_corrente,tipo,tipo_ricerca),
             "lingua" : flag(elemento_corrente.original_language),
             "voto" : star(voto_transform(elemento_corrente.vote_average)),
             "overview" : overview(elemento_corrente.overview),
@@ -113,7 +113,6 @@ $(document).ready(function() {
         no_li_empty(elemento_corrente.id,"title");
         //faccio lo stesso per l overview
         no_li_empty(elemento_corrente.id, "overview");
-
         //effettuo la chiamata ajax per ottenere il cast
         chiamata_ajax_cast(elemento_corrente,tipo);
     }
@@ -206,7 +205,7 @@ $(document).ready(function() {
         return lingua
     }
 
-    function no_title_repeat(elemento_corrente,tipo) {
+    function no_title_repeat(elemento_corrente,tipo,tipo_ricerca) {
         //creo una variabile titolo vuota
         var titolo = "";
         //se sto cercando un film o una serie TV ed il titolo è diverso dal titolo originale entro nella condizione e lo stampo
@@ -227,8 +226,8 @@ $(document).ready(function() {
         }
     }
 
-    function titolo_ricerca_set(data,tipo) {
-        //setto il titolo per genere che indica anche il numero di risulati ottenuti e visualizzati 
+    function titolo_ricerca_set(data,tipo,tipo_ricerca) {
+        //setto il titolo per genere che indica anche il numero di risulati ottenuti e visualizzati
         if (data.results.length > 0) {
             //aggiungo il titolo con il tipo di ricerca effettuata
             if (tipo == tipo_ricerca[0]) {
@@ -250,7 +249,7 @@ $(document).ready(function() {
         }
     }
 
-    function title_org(elemento_corrente, tipo) {
+    function title_org(elemento_corrente,tipo,tipo_ricerca) {
         //setto il titolo della card da visualizzare dato che le due chiamate ajax hanno una chiave diversa per il titolo originale
         var titolo_org;
         if (tipo == tipo_ricerca[0]) {
