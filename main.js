@@ -108,8 +108,12 @@ $(document).ready(function() {
         var html_finale = template_function(context);
         //inserisco i valori in html
         $("#film-tv-container").append(html_finale);
-        //evito di inserire in pagina elementi con testo vuoto
-        noempty(elemento_corrente.id);
+
+        //evito di inserire il titolo vuoto attraverso una funzione apposita
+        no_li_empty(elemento_corrente.id,"title");
+
+        //faccio lo stesso per l overview
+        no_li_empty(elemento_corrente.id, "overview")
 
         //effettuo la chiamata ajax per ottenere il cast
         chiamata_ajax_cast(elemento_corrente,tipo)
@@ -156,7 +160,7 @@ $(document).ready(function() {
             $(".flip-card[data-id=" + elemento_corrente.id + "]").find(".cast span").text(stringa_cast);
         } else {
             //altrimenti nascondo l'elemento vuoto in pagina
-            $(".flip-card[data-id='" + elemento_corrente.id + "'] .cast").addClass("d_none");
+            no_li_empty(elemento_corrente.id, "cast");
         }
     }
 
@@ -286,15 +290,10 @@ $(document).ready(function() {
         return trama_fin;
     }
 
-    function noempty(id) {
+    function no_li_empty(id, tipo_info) {
         //se il valore dell'overview ha testo aggiungo a questa display none
-        if ($(".flip-card[data-id='" + id + "'] .overview span").text() == "") {
-            $(".flip-card[data-id='" + id + "'] .overview").addClass("d_none");
-        }
-
-        //faccio lo stesso per il titolo
-        if ($(".flip-card[data-id='" + id + "'] .title span").text() == "") {
-            $(".flip-card[data-id='" + id + "'] .title").addClass("d_none");
+        if ($(".flip-card[data-id='" + id + "'] ." + tipo_info + " span").text() == "") {
+            $(".flip-card[data-id='" + id + "'] ." + tipo_info).addClass("d_none");
         }
     }
 })
