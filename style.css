@@ -129,6 +129,7 @@ button#search-button {
 .flip-card .copertina-container {
     position: absolute;
     backface-visibility: hidden;
+     -webkit-backface-visibility: hidden; /* Safari */
 }
 
 .box-info {
@@ -141,6 +142,7 @@ button#search-button {
     font-weight: 500;
     background-color: black;
     transform: rotateY(180deg);
+    -webkit-backface-visibility: hidden; /* Safari */
 }
 
 .box-info li {
