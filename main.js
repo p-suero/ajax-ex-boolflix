@@ -106,9 +106,48 @@ $(document).ready(function() {
         var html_finale = template_function(context);
         //inserisco i valori in html
         $("#film-tv-container").append(html_finale);
-
         //evito di inserire in pagina elementi con testo vuoto
         noempty(elemento_corrente.id);
+
+        $.ajax({
+            "url":"https://api.themoviedb.org/3/" + tipo + "/" + elemento_corrente.id + "/credits",
+            "method": "GET",
+            "data": {
+                "api_key": "0d50f7bd14a0021b20cb277c8174b873",
+            },
+            "success": function(data) {
+                //creo una variabile dell'array restituito dall API
+                var array_cast_api = data.cast;
+                //creo la condizione per evitare di entrare in array vuote
+                if (array_cast_api.length != 0) {
+                    // console.log("ciao");
+                    //definisco la condizione del ciclo
+                    var condizione = array_cast_api.length;
+                    if (array_cast_api.length > 5) {
+                        condizione = 5
+                    }
+                    //creo l'array dove salvare gli attori
+                    var cast = [];
+                    //avvio il ciclo for secondo il valore della condizione
+                    for (var i = 0; i < condizione; i++) {
+                        cast.push(array_cast_api[i].name);
+                    }
+
+                    //trasformo l'array in una stringa
+                    var stringa_cast = cast.join(" - ");
+
+                    //inserisco in card il cast
+                    $(".flip-card[data-id=" + elemento_corrente.id + "]").find(".cast span").text(stringa_cast);
+                }
+                //aggiungo display none alle liste-cast in cui l'API non mi fornisce il dato
+                if ($(".flip-card[data-id='" + elemento_corrente.id + "'] .cast span").text() == "") {
+                    $(".flip-card[data-id='" + elemento_corrente.id + "'] .cast").addClass("d_none");
+                }
+            },
+            "error": function() {
+                alert("Si è verificato un errore");
+            }
+        })
     }
 
     function voto_transform(voto) {
@@ -224,8 +263,8 @@ $(document).ready(function() {
         var trama_fin = "";
         if (overview.length != 0) {
             //se i caratteri della descrizione sono maggiore di quelli della sottostringa aggiungo i puntini
-            if (overview.length > 100) {
-                trama_fin =  overview.substr(0,100) + "...";
+            if (overview.length > 180) {
+                trama_fin =  overview.substr(0,180) + "...";
             } else {
                 //altrimenti la stampo cosi com'è
                 trama_fin = overview;
@@ -234,7 +273,7 @@ $(document).ready(function() {
         return trama_fin;
     }
 
-    function noempty (id) {
+    function noempty(id) {
         //se il valore dell'overview ha testo aggiungo a questa display none
         if ($(".flip-card[data-id='" + id + "'] .overview span").text() == "") {
             $(".flip-card[data-id='" + id + "'] .overview").addClass("d_none");
