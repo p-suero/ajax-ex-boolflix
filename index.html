@@ -36,15 +36,15 @@
         <script id="film-tv-template" type="text/x-handlebars-template">
             <div class="flip-card">
                 <div class= "flip-card-inner">
-                    <div class="copertina-container">
+                    <div class="card-front">
                         <img src="{{img-album}}" alt="{{titolo_org}}">
                     </div>
-                    <ul class="box-info">
+                    <ul class="card-back">
                         <li class="title">Titolo: <span>{{titolo}}</span></li>
                         <li class="original_title">Titolo originale: <span>{{titolo_org}}</span></li>
                         <li class="language">Lingua originale: <span>{{{lingua}}}</span></li>
                         <li class="vote">Voto: </span>{{{voto}}}</span></li>
-                        <li class="overview">Descrizione: <span>{{overview}}</span></li>
+                        <li class="overview">Trama: <span>{{overview}}</span></li>
                     </ul>
                 </div>
             </div>

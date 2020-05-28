@@ -219,18 +219,18 @@ $(document).ready(function() {
     }
 
     function overview(overview) {
-        //designo una variabile con descrizione vuota nel caso in cui non venga data dall'api
-        var descrizione_fin = "";
+        //designo una variabile con la trama vuota nel caso in cui non venga data dall'api
+        var trama_fin = "";
         if (overview.length != 0) {
             //se i caratteri della descrizione sono maggiore di quelli della sottostringa aggiungo i puntini
             if (overview.length > 100) {
-                descrizione_fin =  overview.substr(0,100) + "...";
+                trama_fin =  overview.substr(0,100) + "...";
             } else {
                 //altrimenti la stampo cosi com'è
-                descrizione_fin = overview;
+                trama_fin = overview;
             }
         }
-        return descrizione_fin;
+        return trama_fin;
     }
 
     function noempty () {
