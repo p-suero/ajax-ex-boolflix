@@ -69,9 +69,9 @@ $(document).ready(function() {
             },
             "success": function(data) {
                 //setto il messaggio di ricerca
-                messaggio_ricerca_set(data,valore_input);
+                messaggio_ricerca_set(data.results.length, valore_input);
                 //setto il titolo per genere alla chiamata ajax
-                titolo_ricerca_set(data,tipo,tipo_ricerca);
+                titolo_ricerca_set(data.results.length,tipo,tipo_ricerca);
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo,url,tipo_ricerca);
             },
@@ -217,18 +217,18 @@ $(document).ready(function() {
         return titolo
     }
 
-    function messaggio_ricerca_set(data,input) {
+    function messaggio_ricerca_set(numero_risultati,input) {
         //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
-        if (data.results.length != 0) {
+        if (numero_risultati != 0) {
             $(".messaggio_ricerca").addClass("active").text("Risultati ricerca per: '" + input + "'");
         } else {
             $(".messaggio_ricerca").addClass("active").text("Ci dispiace, ma non abbiamo riscontri per il titolo: '" + input + "'");
         }
     }
 
-    function titolo_ricerca_set(data,tipo,tipo_ricerca) {
+    function titolo_ricerca_set(numero_risultati,tipo,tipo_ricerca) {
         //setto il titolo per genere che indica anche il numero di risulati ottenuti e visualizzati
-        if (data.results.length > 0) {
+        if (numero_risultati > 0) {
             //aggiungo il titolo con il tipo di ricerca effettuata
             if (tipo == tipo_ricerca[0]) {
                 var titolo_ricerca = "Film";
@@ -238,7 +238,7 @@ $(document).ready(function() {
             //creo l'oggetto essenziale per handlebars
             var placeholder = {
                 "titolo_ricerca" : titolo_ricerca,
-                "quantità_risultati" : data.results.length
+                "quantità_risultati" : numero_risultati
             }
 
             //preparo la funzione handlebars
