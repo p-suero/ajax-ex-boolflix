@@ -114,18 +114,18 @@ $(document).ready(function() {
         //faccio lo stesso per l overview
         no_li_empty(elemento_corrente.id, "overview");
         //effettuo la chiamata ajax per ottenere il cast
-        chiamata_ajax_cast(elemento_corrente,tipo);
+        chiamata_ajax_cast(elemento_corrente.id,tipo);
     }
 
-    function chiamata_ajax_cast(elemento_corrente,tipo) {
+    function chiamata_ajax_cast(id,tipo) {
         $.ajax({
-            "url":"https://api.themoviedb.org/3/" + tipo + "/" + elemento_corrente.id + "/credits",
+            "url":"https://api.themoviedb.org/3/" + tipo + "/" + id + "/credits",
             "method": "GET",
             "data": {
                 "api_key": "0d50f7bd14a0021b20cb277c8174b873",
             },
             "success": function(data) {
-                gestisci_cast(data, elemento_corrente);
+                gestisci_cast(data, id);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -133,7 +133,7 @@ $(document).ready(function() {
         })
     }
 
-    function gestisci_cast(data, elemento_corrente) {
+    function gestisci_cast(data, id) {
         //creo una variabile dell'array restituito dall API
         var array_cast_api = data.cast;
         //se l'array restituito dall' API non è vuoto recupero il cast
@@ -152,10 +152,10 @@ $(document).ready(function() {
             //trasformo l'array in una stringa
             var stringa_cast = cast.join(" - ");
             //aggiungo il cast alla card
-            aggiungi_cast(elemento_corrente.id, stringa_cast);
+            aggiungi_cast(id, stringa_cast);
         } else {
             //altrimenti nascondo l'elemento vuoto in pagina
-            no_li_empty(elemento_corrente.id, "cast");
+            no_li_empty(id, "cast");
         }
     }
 
