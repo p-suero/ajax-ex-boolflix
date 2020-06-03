@@ -29,11 +29,11 @@
                 <!-- elemento contenente un messaggio con le info della ricerca -->
                 <div class="messaggio_ricerca"></div>
                 <!-- container dei titoli restituiti dall API -->
-                <div id="film-tv-container"></div>
+                <div id="movie-tv-container"></div>
             </div>
         </main>
         <!-- template per HANDLEBARS -->
-        <script id="film-tv-template" type="text/x-handlebars-template">
+        <script id="movie-tv-template" type="text/x-handlebars-template">
             <div class="flip-card" data-id={{id}}>
                 <div class= "flip-card-inner">
                     <div class="card-front">
@@ -54,8 +54,8 @@
         <script id="bandiera-template" type="text/x-handlebars-template">
             <img src="img/flag_{{bandiera}}.png" alt="{{bandiera}}">
         </script>
-        <script id="title-film-tv-template" type="text/x-handlebars-template">
-            <div class='titolo-ricerca'><h2>{{titolo_ricerca}}({{quantità_risultati}})</h2></div>
+        <script id="title-movie-tv-template" type="text/x-handlebars-template">
+            <div class={{tipo}}><h2 class="titolo_ricerca">{{titolo_ricerca}}({{quantità_risultati}})</h2></div>
         </script>
         <!-- link js -->
         <script src="main.js" charset="utf-8"></script>

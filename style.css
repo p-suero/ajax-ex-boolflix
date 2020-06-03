@@ -80,22 +80,21 @@ button#search-button {
     display: block;
 }
 
-#film-tv-container {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+#movie-tv-container {
     color: white;
     z-index: 0;
 }
 
-.titolo-ricerca {
+h2.titolo_ricerca {
     width: 100%;
     text-align: center;
     margin: 30px 0 15px 0;
+    font-size: 15px;
 }
 
-.titolo-ricerca h2 {
-    font-size: 15px;
+.movie, .tv {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .flip-card {

@@ -1,7 +1,10 @@
 $(document).ready(function() {
+    //OBIETTIVO ----> SCRIVERE POCHI TAG DIRETTAMENTE IN JAVA S
+
+    //**********VARIABILI GLOBALI*************//
 
     //recupero la struttura html del template
-    var template_html = $("#film-tv-template").html();
+    var template_html = $("#movie-tv-template").html();
     //preparo la funzione al fine di utilizzare il template con handlebars
     var template_function = Handlebars.compile(template_html);
     //recupero la struttura html per inserire la bandiera del template
@@ -9,9 +12,12 @@ $(document).ready(function() {
     //preparo la funzione al fine di utilizzare il template con handlebars
     var template_bandiera_function = Handlebars.compile(template_bandiera);
     //recupero la struttura html per inserire il titolo per genere del template
-    var template_general_title = $("#title-film-tv-template").html();
+    var template_general_title = $("#title-movie-tv-template").html();
     //preparo la funzione al fine di utilizzare il template con handlebars
     var template_general_title_function = Handlebars.compile(template_general_title);
+
+    //Url base
+    var url_base = "https://api.themoviedb.org/3/";
 
     //designo l' array contenente i valori dell "URL" ovvero delle ricerche possibili
     var tipo_ricerca = ["movie", "tv"];
@@ -19,6 +25,11 @@ $(document).ready(function() {
     //creo degli array per tipo nella quale successivamente inserisco la lista dei generi restituito dall' API
     var generi_film_api = [];
     var generi_serie_api = [];
+
+    //**********FINE VARIABILI GLOBALI***********//
+
+
+
     //effettuo la chiamata ajax per ottenere la lista generi dei film
     chiamata_ajax_genere(tipo_ricerca[0]);
     //effettuo la chiamata ajax per ottenere la lista generi delle serie tv
@@ -40,9 +51,8 @@ $(document).ready(function() {
 //*******************************************//
 
     function chiamata_ajax_genere(tipo) {
-        var url = "https://api.themoviedb.org/3/genre/"+ tipo +"/list";
         $.ajax({
-            "url": url,
+            "url": url_base + "genre/" + tipo + "/list",
             "method": "GET",
             "data": {
                 "api_key": "0d50f7bd14a0021b20cb277c8174b873",
@@ -75,30 +85,24 @@ $(document).ready(function() {
         if (input_ricerca.length > 1) {
             //resetto l'input e svuoto la pagina
             reset();
-            //url base
-            var url = "https://api.themoviedb.org/3/search/";
 
             //effettuo la chiamata ajax per i film
-            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[0]);
+            chiamata_ajax_card(input_ricerca,tipo_ricerca[0]);
             //effettuo la chiamata ajax per le serie tv
-            chiamata_ajax_card(url,input_ricerca,tipo_ricerca[1]);
+            chiamata_ajax_card(input_ricerca,tipo_ricerca[1]);
         }
     }
 
     function reset() {
         //svuoto il valore dell'input
         $("#header-right input").val("");
-        //rimuovo il valore del h2
-        $("#film-tv-container .titolo-ricerca").remove();
-        //rimuovo le card visualizzate in pagina
-        $("#film-tv-container .flip-card").remove();
+        //svuoto il contenitore del titolo e delle card
+        $("#movie-tv-container *").remove();
     }
 
-    function chiamata_ajax_card(url,valore_input,tipo) {
-        //variabile che compone l'url
-        var url = url + tipo;
+    function chiamata_ajax_card(valore_input,tipo) {
         $.ajax({
-            "url": url,
+            "url": url_base + "search/" + tipo,
             "method": "GET",
             "data": {
                 "api_key": "0d50f7bd14a0021b20cb277c8174b873",
@@ -111,7 +115,7 @@ $(document).ready(function() {
                 //setto il titolo per genere alla chiamata ajax
                 titolo_ricerca_set(data.results.length,tipo);
                 //gestisco i dati della chiamata ajax
-                gestione_dati(data,tipo,url);
+                gestione_dati(data,tipo);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -119,7 +123,7 @@ $(document).ready(function() {
         })
     }
 
-    function gestione_dati(data,tipo,url) {
+    function gestione_dati(data,tipo) {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
         //creo un ciclo for per scorrere i titoli all'interno dell'array "results"
@@ -145,7 +149,7 @@ $(document).ready(function() {
         //inserisco le proprietà dell'oggetto nella funzione di Handlebars
         var html_finale = template_function(context);
         //inserisco i valori in html
-        $("#film-tv-container").append(html_finale);
+        $("div." + tipo).append(html_finale);
 
         //evito di inserire il titolo vuoto attraverso una funzione apposita
         no_li_empty(elemento_corrente.id,"title");
@@ -159,7 +163,7 @@ $(document).ready(function() {
 
     function chiamata_ajax_cast(id,tipo) {
         $.ajax({
-            "url":"https://api.themoviedb.org/3/" + tipo + "/" + id + "/credits",
+            "url": url_base + tipo + "/" + id + "/credits",
             "method": "GET",
             "data": {
                 "api_key": "0d50f7bd14a0021b20cb277c8174b873",
@@ -208,23 +212,25 @@ $(document).ready(function() {
         //creo una variabile che identifica il tipo di array da ciclare
         var lista_generale_generi;
         if (tipo == tipo_ricerca[0]) {
-            lista_generale_generi = generi_film_api[0]
+            lista_generale_generi = generi_film_api[0];
         } else {
-            lista_generale_generi = generi_serie_api[0]
+            lista_generale_generi = generi_serie_api[0];
         }
         //se l'array restituito dall API resituisce almeno un ID-GENERE lo esamino
         if (id_generi_correnti.length != 0) {
             //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
             var generi_correnti_convertiti = [];
+            //creo una variabile sentinella
+            var sentinella;
             //avvio un ciclo for per scorrere i generi del titolo corrente
             for (var i = 0; i < id_generi_correnti.length; i++) {
-                //creo una variabile sentinella per fermare il ciclo seguente quando ottiene un riscontro
-                var sentinella = false
+                //questa variabile serve per fermare il ciclo seguente quando ottiene un riscontro
+                sentinella = false;
                 //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
                 for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
                     //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-genere nell'array "generi correnti convertiti"
                     if (id_generi_correnti[i] == lista_generale_generi[j].id) {
-                        generi_correnti_convertiti.push(lista_generale_generi[j].name)
+                        generi_correnti_convertiti.push(lista_generale_generi[j].name);
                         //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
                         sentinella = true;
                     }
@@ -248,7 +254,7 @@ $(document).ready(function() {
     function voto_transform(voto) {
         //trasformo il valore "voto" dell oggetto in un numero intero da 1 a 5(arrotondo per eccesso)
         var voto_transform = Math.ceil(voto / 2);
-        return voto_transform
+        return voto_transform;
     }
 
     function star(voto_transform) {
@@ -269,7 +275,7 @@ $(document).ready(function() {
         } else {
             voto_finale = "<span>0</span>";
         }
-        return voto_finale
+        return voto_finale;
     }
 
     function flag(lingua) {
@@ -281,9 +287,9 @@ $(document).ready(function() {
             var bandiera = {"bandiera" : lingua};
             var html_finale = template_bandiera_function(bandiera);
             //non c'è bisogno di fare un else in quanto se si entra nella condizione il return chiude la funzione
-            return html_finale
+            return html_finale;
         }
-        return lingua
+        return lingua;
     }
 
     function no_title_repeat(elemento_corrente,tipo) {
@@ -295,7 +301,7 @@ $(document).ready(function() {
         } else if (tipo == tipo_ricerca[1] && elemento_corrente.name != elemento_corrente.original_name) {
             titolo = elemento_corrente.name;
         }
-        return titolo
+        return titolo;
     }
 
     function messaggio_ricerca_set(numero_risultati,input) {
@@ -319,14 +325,15 @@ $(document).ready(function() {
             //creo l'oggetto essenziale per handlebars
             var placeholder = {
                 "titolo_ricerca" : titolo_ricerca,
-                "quantità_risultati" : numero_risultati
+                "quantità_risultati" : numero_risultati,
+                "tipo": tipo
             }
 
             //preparo la funzione handlebars
             var html_finale = template_general_title_function(placeholder);
 
             //stampo in pagina quanto formulato
-            $("#film-tv-container").append(html_finale);
+            $("#movie-tv-container").append(html_finale);
         }
     }
 
@@ -352,7 +359,7 @@ $(document).ready(function() {
             var url_coda = poster_path;
             var img_finale = url_iniziale + img_width + url_coda;
         }
-        return img_finale
+        return img_finale;
     }
 
     function overview(overview) {
@@ -368,7 +375,7 @@ $(document).ready(function() {
                 trama_fin = overview;
             }
         }
-        return trama_fin
+        return trama_fin;
     }
 
     function no_li_empty(id, tipo_info) {
