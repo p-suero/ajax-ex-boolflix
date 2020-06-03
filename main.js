@@ -17,8 +17,8 @@ $(document).ready(function() {
     var tipo_ricerca = ["movie", "tv"];
 
     //creo degli array per tipo nella quale successivamente inserisco la lista dei generi restituito dall' API
-    var genere_film_api = [];
-    var genere_serie_api = [];
+    var generi_film_api = [];
+    var generi_serie_api = [];
     //effettuo la chiamata ajax per ottenere la lista generi dei film
     chiamata_ajax_genere(tipo_ricerca[0]);
     //effettuo la chiamata ajax per ottenere la lista generi delle serie tv
@@ -61,10 +61,10 @@ $(document).ready(function() {
         //verifico il tipo di ricerca cosi da tenere distinte le due liste di generi
         if (tipo == tipo_ricerca[0]) {
             //se il tipo è un film aggiungo i generi nell'array  FILM
-            genere_film_api.push(arrayApi);
+            generi_film_api.push(arrayApi);
         } else {
             //altrimenti nell'array SERIE TV
-            genere_serie_api.push(arrayApi);
+            generi_serie_api.push(arrayApi);
         }
     }
 
@@ -204,41 +204,40 @@ $(document).ready(function() {
         $(".flip-card[data-id=" + id + "]").find(".cast span").text(testo);
     }
 
-    function gestisci_genere_card (genere,tipo,id) {
+    function gestisci_genere_card (id_generi_correnti,tipo,id) {
         //creo una variabile che identifica il tipo di array da ciclare
-        var lista
+        var lista_generale_generi;
         if (tipo == tipo_ricerca[0]) {
-            lista = genere_film_api[0]
+            lista_generale_generi = generi_film_api[0]
         } else {
-            lista = genere_serie_api[0]
+            lista_generale_generi = generi_serie_api[0]
         }
-
-        //se l'array restituito dall API vado a vedere il genere
-        if (genere.length != 0) {
-            //creo l'array dove inserire i generi di ogni titolo
-            var generi_titolo = [];
+        //se l'array restituito dall API resituisce almeno un ID-GENERE lo esamino
+        if (id_generi_correnti.length != 0) {
+            //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
+            var generi_correnti_convertiti = [];
             //creo una variabile sentinella per fermare il ciclo quando trovo l'id del genere
             var sentinella = false;
             //avvio un ciclo for per scorrere i generi del titolo corrente
-            for (var i = 0; i < genere.length; i++) {
+            for (var i = 0; i < id_generi_correnti.length; i++) {
                 sentinella = false
-                //effettuo un altro ciclo for per cercare un riscontro tra l'id del titolo e l'id della lista di tutti i generi
-                for (var j = 0; j < lista.length&& sentinella == false; j++) {
-                    //se il genere è uguale a quello definito nella lista di tutti i generi lo inserisco nella variabile generi_titolo
-                    if (genere[i] == lista[j].id) {
-                        generi_titolo.push(lista[j].name)
-                        //se trovo un riscontro pongo la variabile sentinella pari a true così da non far proseguire il ciclo
+                //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
+                for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
+                    //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-geenre nell'array "generi correnti convertiti"
+                    if (id_generi_correnti[i] == lista_generale_generi[j].id) {
+                        generi_correnti_convertiti.push(lista_generale_generi[j].name)
+                        //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
                         sentinella = true;
                     }
                 }
             }
             //trasformo l'array in una stringa
-            var stringa_generi = generi_titolo.join(" - ");
+            var stringa_generi_correnti = generi_correnti_convertiti.join(" - ");
             //aggiungo il genere alla card
-            aggiungi_genere(id,stringa_generi)
+            aggiungi_genere(id,stringa_generi_correnti);
         } else {
             //altrimenti assegno display none ai titoli se l'api non restituisce anche un genere tra le info del titolo
-            no_li_empty(id, "genres")
+            no_li_empty(id, "genres");
         }
     }
 
