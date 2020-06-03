@@ -216,14 +216,13 @@ $(document).ready(function() {
         if (id_generi_correnti.length != 0) {
             //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
             var generi_correnti_convertiti = [];
-            //creo una variabile sentinella per fermare il ciclo quando trovo l'id del genere
-            var sentinella = false;
             //avvio un ciclo for per scorrere i generi del titolo corrente
             for (var i = 0; i < id_generi_correnti.length; i++) {
-                sentinella = false
+                //creo una variabile sentinella per fermare il ciclo seguente quando ottiene un riscontro
+                var sentinella = false
                 //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
                 for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
-                    //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-geenre nell'array "generi correnti convertiti"
+                    //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-genere nell'array "generi correnti convertiti"
                     if (id_generi_correnti[i] == lista_generale_generi[j].id) {
                         generi_correnti_convertiti.push(lista_generale_generi[j].name)
                         //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
