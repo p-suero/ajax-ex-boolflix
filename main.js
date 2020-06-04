@@ -88,7 +88,7 @@ $(document).ready(function() {
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
                 //setto il un messaggio che visualizza le info del risultato della ricerca
-                set_risultato_ricerca(valore_input,tipo);
+                set_info_ricerca(valore_input,tipo);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -270,7 +270,7 @@ $(document).ready(function() {
     }
 
     //funzione che setta i risultati della ricerca
-    function set_risultato_ricerca(input,tipo) {
+    function set_info_ricerca(input,tipo) {
         //creo una variabile con il selettore del messaggio risultato trovato
         var result_ok = $(".risultato-ricerca .result-ok")
         //creo una variabile con il selettore del messaggio "no-results"
