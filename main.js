@@ -53,7 +53,7 @@ $(document).ready(function() {
     function ricerca() {
         //designo la variabile del valore dell'input
         var input_ricerca = $("#header-right input").val().trim();
-        //se il valore dell'input è diverso da stringa vuota effettuo la ricerca
+        //se il valore dell'input è maggiore di un carattere effettuo la ricerca
         if (input_ricerca.length > 1) {
             //resetto l'input e svuoto la pagina
             reset();
@@ -72,7 +72,7 @@ $(document).ready(function() {
         $("#movie-tv-container *").remove();
     }
 
-    //funzione che effettua la chiamata ajax
+    //funzione che effettua la chiamata ajax dei film e serieTV
     function chiamata_ajax_card(valore_input,tipo) {
         $.ajax({
             "url": url_base + "search/" + tipo,
@@ -87,7 +87,7 @@ $(document).ready(function() {
                 wrapperCard_e_h2_set(data.results.length,tipo);
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
-                //setto il che avvisa se la ricerca non produce risultati
+                //setto il un messaggio che visualizza le info del risultato della ricerca
                 set_risultato_ricerca(valore_input,tipo);
             },
             "error": function() {
@@ -119,7 +119,7 @@ $(document).ready(function() {
         }
     }
 
-    //funzione che gestisce i dati della chiamate ajax generali
+    //funzione che gestisce i dati della chiamate dei film e serieTV
     function gestione_dati(data,tipo) {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
