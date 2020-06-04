@@ -330,7 +330,7 @@ $(document).ready(function() {
         $(".flip-card[data-id=" + id + "]").find(".cast span").text(testo);
     }
 
-    //funzione che effettua una chiamata ajac per ottenere la lista dei generi
+    //funzione che effettua una chiamata ajax per recuperare il genere
     function chiamata_ajax_genere(tipo) {
         $.ajax({
             "url": url_base + "genre/" + tipo + "/list",
@@ -360,7 +360,7 @@ $(document).ready(function() {
         }
     }
 
-    //funzione che gestisce che traduce i generi correnti dei film/seritv da ID a testo
+    //funzione che traduce i generi correnti dei film/seritv da ID a testo
     function gestisci_genere_card (id_generi_correnti,tipo,id) {
         //creo una variabile che identifica il tipo di array da ciclare
         var lista_generale_generi;
