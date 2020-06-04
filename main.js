@@ -50,34 +50,6 @@ $(document).ready(function() {
 //*****************FUNZIONI*******************//
 //*******************************************//
 
-    function chiamata_ajax_genere(tipo) {
-        $.ajax({
-            "url": url_base + "genre/" + tipo + "/list",
-            "method": "GET",
-            "data": {
-                "api_key": "0d50f7bd14a0021b20cb277c8174b873",
-                "language":"it",
-            },
-            "success": function(data) {
-                crea_lista_generi(tipo,data.genres);
-            },
-            "error": function() {
-                alert("Si è verificato un errore");
-            }
-        })
-    }
-
-    function crea_lista_generi (tipo,arrayApi) {
-        //verifico il tipo di ricerca cosi da tenere distinte le due liste di generi
-        if (tipo == tipo_ricerca[0]) {
-            //se il tipo è un film aggiungo i generi nell'array  FILM
-            generi_film_api.push(arrayApi);
-        } else {
-            //altrimenti nell'array SERIE TV
-            generi_serie_api.push(arrayApi);
-        }
-    }
-
     function ricerca() {
         //designo la variabile del valore dell'input
         var input_ricerca = $("#header-right input").val().trim();
@@ -90,6 +62,8 @@ $(document).ready(function() {
             chiamata_ajax_card(input_ricerca,tipo_ricerca[0]);
             //effettuo la chiamata ajax per le serie tv
             chiamata_ajax_card(input_ricerca,tipo_ricerca[1]);
+            //svuoto l'array dai generi risultanti dalla ricerca precedente
+            generi_in_pagina = [];
         }
     }
 
@@ -110,17 +84,39 @@ $(document).ready(function() {
                 "query": valore_input
             },
             "success": function(data) {
-                //setto il messaggio di ricerca
-                messaggio_ricerca_set(data.results.length, valore_input);
                 //setto il titolo per genere alla chiamata ajax
-                titolo_ricerca_set(data.results.length,tipo);
+                wrapperCard_e_h2_set(data.results.length,tipo);
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
+                //setto il messaggio di ricerca
+                messaggio_ricerca_set(data.results.length, valore_input,tipo);
             },
             "error": function() {
                 alert("Si è verificato un errore");
             }
         })
+    }
+
+    function wrapperCard_e_h2_set(numero_risultati,tipo) {
+        //setto il container delle card ed il titolo di antemprima
+        if (numero_risultati > 0) {
+            //aggiungo il container ed titolo secondo del tipo di ricerca effettuata
+            if (tipo == tipo_ricerca[0]) {
+                var titolo_ricerca = "Film";
+            } else {
+                var titolo_ricerca = "Serie TV";
+            }
+            //creo l'oggetto essenziale per handlebars
+            var placeholder = {
+                "titolo_ricerca" : titolo_ricerca,
+                "quantità_risultati" : numero_risultati,
+                "tipo": tipo
+            }
+            //preparo la funzione handlebars
+            var html_finale = template_general_title_function(placeholder);
+            //stampo in pagina quanto formulato
+            $("#movie-tv-container").append(html_finale);
+        }
     }
 
     function gestione_dati(data,tipo) {
@@ -159,96 +155,6 @@ $(document).ready(function() {
         chiamata_ajax_cast(elemento_corrente.id,tipo);
         //aggiungo il genere alla card
         gestisci_genere_card(elemento_corrente.genre_ids,tipo,elemento_corrente.id);
-    }
-
-    function chiamata_ajax_cast(id,tipo) {
-        $.ajax({
-            "url": url_base + tipo + "/" + id + "/credits",
-            "method": "GET",
-            "data": {
-                "api_key": "0d50f7bd14a0021b20cb277c8174b873",
-            },
-            "success": function(data) {
-                gestisci_cast(data, id);
-            },
-            "error": function() {
-                alert("Si è verificato un errore");
-            }
-        })
-    }
-
-    function gestisci_cast(data, id) {
-        //creo una variabile dell'array restituito dall API
-        var array_cast_api = data.cast;
-        //se l'array restituito dall' API non è vuoto recupero il cast
-        if (array_cast_api.length != 0) {
-            //definisco la condizione del ciclo
-            var condizione = array_cast_api.length;
-            if (array_cast_api.length > 5) {
-                condizione = 5;
-            }
-            //creo l'array dove salvare gli attori
-            var cast = [];
-            //avvio il ciclo for secondo il valore della condizione
-            for (var i = 0; i < condizione; i++) {
-                cast.push(array_cast_api[i].name);
-            }
-            //trasformo l'array in una stringa
-            var stringa_cast = cast.join(" - ");
-            //aggiungo il cast alla card
-            aggiungi_cast(id, stringa_cast);
-        } else {
-            //altrimenti nascondo l'elemento vuoto in pagina
-            no_li_empty(id, "cast");
-        }
-    }
-
-    function aggiungi_cast(id,testo) {
-        //inserisco in card il cast
-        $(".flip-card[data-id=" + id + "]").find(".cast span").text(testo);
-    }
-
-    function gestisci_genere_card (id_generi_correnti,tipo,id) {
-        //creo una variabile che identifica il tipo di array da ciclare
-        var lista_generale_generi;
-        if (tipo == tipo_ricerca[0]) {
-            lista_generale_generi = generi_film_api[0];
-        } else {
-            lista_generale_generi = generi_serie_api[0];
-        }
-        //se l'array restituito dall API resituisce almeno un ID-GENERE lo esamino
-        if (id_generi_correnti.length != 0) {
-            //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
-            var generi_correnti_convertiti = [];
-            //creo una variabile sentinella
-            var sentinella;
-            //avvio un ciclo for per scorrere i generi del titolo corrente
-            for (var i = 0; i < id_generi_correnti.length; i++) {
-                //questa variabile serve per fermare il ciclo seguente quando ottiene un riscontro
-                sentinella = false;
-                //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
-                for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
-                    //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-genere nell'array "generi correnti convertiti"
-                    if (id_generi_correnti[i] == lista_generale_generi[j].id) {
-                        generi_correnti_convertiti.push(lista_generale_generi[j].name);
-                        //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
-                        sentinella = true;
-                    }
-                }
-            }
-            //trasformo l'array in una stringa
-            var stringa_generi_correnti = generi_correnti_convertiti.join(" - ");
-            //aggiungo il genere alla card
-            aggiungi_genere(id,stringa_generi_correnti);
-        } else {
-            //altrimenti assegno display none ai titoli se l'api non restituisce anche un genere tra le info del titolo
-            no_li_empty(id, "genres");
-        }
-    }
-
-    function aggiungi_genere(id,testo) {
-        //inserisco il genere nella card
-        $(".flip-card[data-id=" + id + "]").find(".genres span").text(testo);
     }
 
     function voto_transform(voto) {
@@ -304,39 +210,6 @@ $(document).ready(function() {
         return titolo;
     }
 
-    function messaggio_ricerca_set(numero_risultati,input) {
-        //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
-        if (numero_risultati != 0) {
-            $(".messaggio_ricerca").addClass("active").text("Risultati ricerca per: '" + input + "'");
-        } else {
-            $(".messaggio_ricerca").addClass("active").text("Ci dispiace, ma non abbiamo riscontri per il titolo: '" + input + "'");
-        }
-    }
-
-    function titolo_ricerca_set(numero_risultati,tipo) {
-        //setto il titolo per genere che indica anche il numero di risulati ottenuti e visualizzati
-        if (numero_risultati > 0) {
-            //aggiungo il titolo con il tipo di ricerca effettuata
-            if (tipo == tipo_ricerca[0]) {
-                var titolo_ricerca = "Film";
-            } else {
-                var titolo_ricerca = "Serie TV";
-            }
-            //creo l'oggetto essenziale per handlebars
-            var placeholder = {
-                "titolo_ricerca" : titolo_ricerca,
-                "quantità_risultati" : numero_risultati,
-                "tipo": tipo
-            }
-
-            //preparo la funzione handlebars
-            var html_finale = template_general_title_function(placeholder);
-
-            //stampo in pagina quanto formulato
-            $("#movie-tv-container").append(html_finale);
-        }
-    }
-
     function title_org(elemento_corrente,tipo) {
         //setto il titolo della card da visualizzare dato che le due chiamate ajax hanno una chiave diversa per il titolo originale
         var titolo_org;
@@ -383,5 +256,133 @@ $(document).ready(function() {
         if ($(".flip-card[data-id='" + id + "'] ." + tipo_info + " span").text() == "") {
             $(".flip-card[data-id='" + id + "'] ." + tipo_info).addClass("d_none");
         }
+    }
+
+    function messaggio_ricerca_set(numero_risultati,input,tipo) {
+        var figli_container = $("#movie-tv-container").children()
+        //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
+        if (figli_container.hasClass(tipo_ricerca[0]) || figli_container.hasClass(tipo_ricerca[1])) {
+            $(".messaggio_ricerca").addClass("active").text("Risultati ricerca per: '" + input + "'");
+        } else {
+            $(".messaggio_ricerca").addClass("active").text("Ci dispiace, ma non abbiamo riscontri per il titolo: '" + input + "'");
+        }
+    }
+
+    function chiamata_ajax_cast(id,tipo) {
+        $.ajax({
+            "url": url_base + tipo + "/" + id + "/credits",
+            "method": "GET",
+            "data": {
+                "api_key": "0d50f7bd14a0021b20cb277c8174b873",
+            },
+            "success": function(data) {
+                gestisci_cast(data, id);
+            },
+            "error": function() {
+                alert("Si è verificato un errore");
+            }
+        })
+    }
+
+    function gestisci_cast(data, id) {
+        //creo una variabile dell'array restituito dall API
+        var array_cast_api = data.cast;
+        //se l'array restituito dall' API non è vuoto recupero il cast
+        if (array_cast_api.length != 0) {
+            //definisco la condizione del ciclo
+            var condizione = array_cast_api.length;
+            if (array_cast_api.length > 5) {
+                condizione = 5;
+            }
+            //creo l'array dove salvare gli attori
+            var cast = [];
+            //avvio il ciclo for secondo il valore della condizione
+            for (var i = 0; i < condizione; i++) {
+                cast.push(array_cast_api[i].name);
+            }
+            //trasformo l'array in una stringa
+            var stringa_cast = cast.join(" - ");
+            //aggiungo il cast alla card
+            aggiungi_cast(id, stringa_cast);
+        } else {
+            //altrimenti nascondo l'elemento vuoto in pagina
+            no_li_empty(id, "cast");
+        }
+    }
+
+    function aggiungi_cast(id,testo) {
+        //inserisco in card il cast
+        $(".flip-card[data-id=" + id + "]").find(".cast span").text(testo);
+    }
+
+    function chiamata_ajax_genere(tipo) {
+        $.ajax({
+            "url": url_base + "genre/" + tipo + "/list",
+            "method": "GET",
+            "data": {
+                "api_key": "0d50f7bd14a0021b20cb277c8174b873",
+                "language":"it",
+            },
+            "success": function(data) {
+                crea_lista_generi(tipo,data.genres);
+            },
+            "error": function() {
+                alert("Si è verificato un errore");
+            }
+        })
+    }
+
+    function crea_lista_generi (tipo,arrayApi) {
+        //verifico il tipo di ricerca cosi da tenere distinte le due liste di generi
+        if (tipo == tipo_ricerca[0]) {
+            //se il tipo è un film aggiungo i generi nell'array  FILM
+            generi_film_api.push(arrayApi);
+        } else {
+            //altrimenti nell'array SERIE TV
+            generi_serie_api.push(arrayApi);
+        }
+    }
+
+    function gestisci_genere_card (id_generi_correnti,tipo,id) {
+        //creo una variabile che identifica il tipo di array da ciclare
+        var lista_generale_generi;
+        if (tipo == tipo_ricerca[0]) {
+            lista_generale_generi = generi_film_api[0];
+        } else {
+            lista_generale_generi = generi_serie_api[0];
+        }
+        //se l'array restituito dall API resituisce almeno un ID-GENERE lo esamino
+        if (id_generi_correnti.length != 0) {
+            //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
+            var generi_correnti_convertiti = [];
+            //creo una variabile sentinella
+            var sentinella;
+            //avvio un ciclo for per scorrere i generi del titolo corrente
+            for (var i = 0; i < id_generi_correnti.length; i++) {
+                //questa variabile serve per fermare il ciclo seguente quando ottiene un riscontro
+                sentinella = false;
+                //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
+                for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
+                    //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-genere nell'array "generi correnti convertiti"
+                    if (id_generi_correnti[i] == lista_generale_generi[j].id) {
+                        generi_correnti_convertiti.push(lista_generale_generi[j].name);
+                        //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
+                        sentinella = true;
+                    }
+                }
+            }
+            //trasformo l'array in una stringa
+            var stringa_generi_correnti = generi_correnti_convertiti.join(" - ");
+            //aggiungo il genere alla card
+            aggiungi_genere(id,stringa_generi_correnti);
+        } else {
+            //altrimenti assegno display none ai titoli se l'api non restituisce anche un genere tra le info del titolo
+            no_li_empty(id, "genres");
+        }
+    }
+
+    function aggiungi_genere(id,testo) {
+        //inserisco il genere nella card
+        $(".flip-card[data-id=" + id + "]").find(".genres span").text(testo);
     }
 })
