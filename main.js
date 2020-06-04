@@ -88,7 +88,7 @@ $(document).ready(function() {
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
                 //setto il che avvisa se la ricerca non produce risultati
-                set_alert_nessun_risultato(valore_input,tipo);
+                set_risultato_ricerca(valore_input,tipo);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -270,19 +270,28 @@ $(document).ready(function() {
     }
 
     //funzione che setta i risultati della ricerca
-    function set_alert_nessun_risultato(input,tipo) {
+    function set_risultato_ricerca(input,tipo) {
+        //creo una variabile con il selettore del messaggio risultato trovato
+        var result_ok = $(".risultato-ricerca .result-ok")
         //creo una variabile con il selettore del messaggio "no-results"
-        var no_risp = $(".no_results");
+        var no_result = $(".risultato-ricerca .no-result");
         //creo una variabile con il selettore degli eventuali figli del container FILM/SERIETV
         var figli_container = $("#movie-tv-container").children();
-        //rimuovo la classe active al messaggio no-results
-        no_risp.removeClass("active");
         //visualizzo un messaggio se la ricerca non da riscontri
-        if (!figli_container.hasClass(tipo_ricerca[0]) && !figli_container.hasClass(tipo_ricerca[1])) {
-            //aggiungo la classe active
-            no_risp.addClass("active");
-            //inserisco il testo della ricerca nello span
-            no_risp.find("span").text(input);
+        if (figli_container.hasClass(tipo_ricerca[0]) || figli_container.hasClass(tipo_ricerca[1])) {
+            //rimuovo la visibiltà al messaggio "nessun risultato"
+            no_result.removeClass("active");
+            //aggiungo il valore dell'input al messaggio
+            result_ok.find("span").text(input)
+            //l'aggiungo al messaggio di "ricerca con successo"
+            result_ok.addClass("active");
+        } else if (!figli_container.hasClass(tipo_ricerca[0]) && !figli_container.hasClass(tipo_ricerca[1])) {
+            //rimuovo la visibiltà al messaggio di "ricerca ok"
+            result_ok.removeClass("active");
+            //aggiungo la specifica della ricerca effettuata al messaggio "non result"
+            no_result.find("span").text(input)
+            //l'aggiungo al messaggio di "nessun risultato"
+            no_result.addClass("active");
         }
     }
 

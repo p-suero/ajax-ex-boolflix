@@ -68,20 +68,17 @@ button#search-button {
 }
 
 /* MAIN */
-.no_results {
-    display: none;
+.risultato-ricerca {
     margin-top: 30px;
     color: white;
-    font-weight: 500;
-    text-align: center;
 }
 
-.no_results h2 {
-    font-size: 15px;
-    font-weight: 400:
+.risultato-ricerca h2 {
+    display: none;
+    font-size: 19px;
 }
 
-.no_results.active {
+.risultato-ricerca h2.active {
     display: block;
 }
 
