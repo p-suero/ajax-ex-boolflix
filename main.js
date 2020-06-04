@@ -87,8 +87,8 @@ $(document).ready(function() {
                 wrapperCard_e_h2_set(data.results.length,tipo);
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
-                //setto il messaggio di ricerca
-                messaggio_ricerca_set(data.results.length, valore_input,tipo);
+                //setto il che avvisa se la ricerca non produce risultati
+                set_alert_nessun_risultato(valore_input,tipo);
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -270,13 +270,19 @@ $(document).ready(function() {
     }
 
     //funzione che setta i risultati della ricerca
-    function messaggio_ricerca_set(numero_risultati,input,tipo) {
-        var figli_container = $("#movie-tv-container").children()
-        //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
-        if (figli_container.hasClass(tipo_ricerca[0]) || figli_container.hasClass(tipo_ricerca[1])) {
-            $(".messaggio_ricerca").addClass("active").text("Risultati ricerca per: '" + input + "'");
-        } else {
-            $(".messaggio_ricerca").addClass("active").text("Ci dispiace, ma non abbiamo riscontri per il titolo: '" + input + "'");
+    function set_alert_nessun_risultato(input,tipo) {
+        //creo una variabile con il selettore del messaggio "no-results"
+        var no_risp = $(".no_results");
+        //creo una variabile con il selettore degli eventuali figli del container FILM/SERIETV
+        var figli_container = $("#movie-tv-container").children();
+        //rimuovo la classe active al messaggio no-results
+        no_risp.removeClass("active");
+        //visualizzo un messaggio se la ricerca non da riscontri
+        if (!figli_container.hasClass(tipo_ricerca[0]) && !figli_container.hasClass(tipo_ricerca[1])) {
+            //aggiungo la classe active
+            no_risp.addClass("active");
+            //inserisco il testo della ricerca nello span
+            no_risp.find("span").text(input);
         }
     }
 
