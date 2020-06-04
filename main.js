@@ -277,7 +277,7 @@ $(document).ready(function() {
         var no_result = $(".risultato-ricerca .no-result");
         //creo una variabile con il selettore degli eventuali figli del container FILM/SERIETV
         var figli_container = $("#movie-tv-container").children();
-        //visualizzo un messaggio se la ricerca non da riscontri
+        //visualizzo un messaggio se la ricerca da un riscontro
         if (figli_container.hasClass(tipo_ricerca[0]) || figli_container.hasClass(tipo_ricerca[1])) {
             //rimuovo la visibiltà al messaggio "nessun risultato"
             no_result.removeClass("active");
@@ -286,6 +286,7 @@ $(document).ready(function() {
             //l'aggiungo al messaggio di "ricerca con successo"
             result_ok.addClass("active");
         } else if (!figli_container.hasClass(tipo_ricerca[0]) && !figli_container.hasClass(tipo_ricerca[1])) {
+            //altrimenti visualizzo un messaggio di "nessun risultato"
             //rimuovo la visibiltà al messaggio di "ricerca ok"
             result_ok.removeClass("active");
             //aggiungo la specifica della ricerca effettuata al messaggio "non result"
