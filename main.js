@@ -1,25 +1,24 @@
 $(document).ready(function() {
-    //OBIETTIVO ----> SCRIVERE POCHI TAG DIRETTAMENTE IN JAVA S
 
     //**********VARIABILI GLOBALI*************//
 
-    //recupero la struttura html del template
+    //template per la card film/serie
     var template_html = $("#movie-tv-template").html();
-    //preparo la funzione al fine di utilizzare il template con handlebars
     var template_function = Handlebars.compile(template_html);
-    //recupero la struttura html per inserire la bandiera del template
+
+    //template per le bandierine nella card
     var template_bandiera = $("#bandiera-template").html();
-    //preparo la funzione al fine di utilizzare il template con handlebars
     var template_bandiera_function = Handlebars.compile(template_bandiera);
-    //recupero la struttura html per inserire il titolo per genere del template
-    var template_general_title = $("#title-movie-tv-template").html();
+
+    //template per il container dei film/serie
+    var template_general_title = $("#container-movie-tv-template").html();
     //preparo la funzione al fine di utilizzare il template con handlebars
     var template_general_title_function = Handlebars.compile(template_general_title);
 
     //Url base
     var url_base = "https://api.themoviedb.org/3/";
 
-    //designo l' array contenente i valori dell "URL" ovvero delle ricerche possibili
+    //designo l'array contenente i tipo di ricerca eseguibili(vengono iserite nell'url di ajax)
     var tipo_ricerca = ["movie", "tv"];
 
     //creo degli array per tipo nella quale successivamente inserisco la lista dei generi restituito dall' API
@@ -35,10 +34,10 @@ $(document).ready(function() {
     //effettuo la chiamata ajax per ottenere la lista generi delle serie tv
     chiamata_ajax_genere(tipo_ricerca[1]);
 
-    // al click sul button effettuo la ricerca
+    // al click sul button ricerco i titoli
     $("#search-button").click(ricerca);
 
-    //al premere del pulsante invio, effettuo la ricerca
+    //lo stesso se premo il tasto INVIO della tastiera
     $("#header-right input").keypress(function() {
         if (event.which == 13) {
             ricerca();
@@ -50,6 +49,7 @@ $(document).ready(function() {
 //*****************FUNZIONI*******************//
 //*******************************************//
 
+    //funzione che avvia la ricerca dei titoli
     function ricerca() {
         //designo la variabile del valore dell'input
         var input_ricerca = $("#header-right input").val().trim();
@@ -57,16 +57,14 @@ $(document).ready(function() {
         if (input_ricerca.length > 1) {
             //resetto l'input e svuoto la pagina
             reset();
-
             //effettuo la chiamata ajax per i film
             chiamata_ajax_card(input_ricerca,tipo_ricerca[0]);
             //effettuo la chiamata ajax per le serie tv
             chiamata_ajax_card(input_ricerca,tipo_ricerca[1]);
-            //svuoto l'array dai generi risultanti dalla ricerca precedente
-            generi_in_pagina = [];
         }
     }
 
+    //funzione che resetta la pagina ad una nuova ricerca
     function reset() {
         //svuoto il valore dell'input
         $("#header-right input").val("");
@@ -74,6 +72,7 @@ $(document).ready(function() {
         $("#movie-tv-container *").remove();
     }
 
+    //funzione che effettua la chiamata ajax
     function chiamata_ajax_card(valore_input,tipo) {
         $.ajax({
             "url": url_base + "search/" + tipo,
@@ -84,7 +83,7 @@ $(document).ready(function() {
                 "query": valore_input
             },
             "success": function(data) {
-                //setto il titolo per genere alla chiamata ajax
+                //setto il contenitore delle card ed inserisco un titolo per tipo
                 wrapperCard_e_h2_set(data.results.length,tipo);
                 //gestisco i dati della chiamata ajax
                 gestione_dati(data,tipo);
@@ -97,10 +96,11 @@ $(document).ready(function() {
         })
     }
 
+    //funzione che setta il contenitore delle card ed inserisce un titolo per tipo
     function wrapperCard_e_h2_set(numero_risultati,tipo) {
-        //setto il container delle card ed il titolo di antemprima
+        //se il numero dei risultati restituiti dall AJAX è maggiore di 0 entro nella condizione
         if (numero_risultati > 0) {
-            //aggiungo il container ed titolo secondo del tipo di ricerca effettuata
+            //aggiungo il container ed titolo secondo il tipo di ricerca effettuata
             if (tipo == tipo_ricerca[0]) {
                 var titolo_ricerca = "Film";
             } else {
@@ -119,6 +119,7 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che gestisce i dati della chiamate ajax generali
     function gestione_dati(data,tipo) {
         //seleziono l'array "results" dato dall'API
         var risultati = data.results;
@@ -131,6 +132,7 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che aggiunge in pagina la card con le specifiche del film/serieTV
     function agg_card(elemento_corrente,tipo) {
         //creo l'oggetto per popolare il template
         var context = {
@@ -147,7 +149,7 @@ $(document).ready(function() {
         //inserisco i valori in html
         $("div." + tipo).append(html_finale);
 
-        //evito di inserire il titolo vuoto attraverso una funzione apposita
+        //evito di inserire il titolo vuoto utilizzando una funzione apposita
         no_li_empty(elemento_corrente.id,"title");
         //faccio lo stesso per l overview
         no_li_empty(elemento_corrente.id, "overview");
@@ -157,12 +159,14 @@ $(document).ready(function() {
         gestisci_genere_card(elemento_corrente.genre_ids,tipo,elemento_corrente.id);
     }
 
+    //funzione che modella il range dei voti
     function voto_transform(voto) {
         //trasformo il valore "voto" dell oggetto in un numero intero da 1 a 5(arrotondo per eccesso)
         var voto_transform = Math.ceil(voto / 2);
         return voto_transform;
     }
 
+    //funzione che sostituisce il voto numerale con una stella
     function star(voto_transform) {
         //desgigno la variabile stella
         var voto_finale = "";
@@ -179,11 +183,13 @@ $(document).ready(function() {
                 }
             }
         } else {
-            voto_finale = "<span>0</span>";
+            //altrimenti il voto sarà pari a 0
+            voto_finale = 0;
         }
         return voto_finale;
     }
 
+    //funzione che sostituisce la lingua con una bandiera(ove possibile)
     function flag(lingua) {
         //definisco un array di bandiere disponibili in memoria locale
         var bandiere_in_locale = ["de", "en", "es", "fr", "fr", "it"];
@@ -198,6 +204,7 @@ $(document).ready(function() {
         return lingua;
     }
 
+    //funzione che evita di ripetere il titolo originale e titolo, se uguali
     function no_title_repeat(elemento_corrente,tipo) {
         //creo una variabile titolo vuota
         var titolo = "";
@@ -210,6 +217,7 @@ $(document).ready(function() {
         return titolo;
     }
 
+    //funzione per stabilire il titolo originale da stampare
     function title_org(elemento_corrente,tipo) {
         //setto il titolo della card da visualizzare dato che le due chiamate ajax hanno una chiave diversa per il titolo originale
         var titolo_org;
@@ -221,6 +229,7 @@ $(document).ready(function() {
         return titolo_org;
     }
 
+    //funzione che setta l'url dell'immagine
     function img(poster_path) {
         //designo una variabile con l'immagine in caso di valore nullo
         var img_finale = "img/img_null.png";
@@ -235,6 +244,7 @@ $(document).ready(function() {
         return img_finale;
     }
 
+    //funzione che setta la trama
     function overview(overview) {
         //designo una variabile con la trama vuota nel caso in cui non venga data dall'api
         var trama_fin = "";
@@ -251,6 +261,7 @@ $(document).ready(function() {
         return trama_fin;
     }
 
+    //funzione che nasconde gli elementi vuoti
     function no_li_empty(id, tipo_info) {
         //se il valore dell'overview ha testo, aggiungo a questa display none
         if ($(".flip-card[data-id='" + id + "'] ." + tipo_info + " span").text() == "") {
@@ -258,6 +269,7 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che setta i risultati della ricerca
     function messaggio_ricerca_set(numero_risultati,input,tipo) {
         var figli_container = $("#movie-tv-container").children()
         //aggiungo classe active all'elemento che stampa il messaggio della ricerca e gli inserisco il valore dell'input
@@ -268,6 +280,7 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che effettua la chiamata ajax per ottenere il cast
     function chiamata_ajax_cast(id,tipo) {
         $.ajax({
             "url": url_base + tipo + "/" + id + "/credits",
@@ -284,6 +297,7 @@ $(document).ready(function() {
         })
     }
 
+    //funzione che gestisce i cast resituiti dall'API
     function gestisci_cast(data, id) {
         //creo una variabile dell'array restituito dall API
         var array_cast_api = data.cast;
@@ -310,11 +324,13 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che aggiunge i cast alle card
     function aggiungi_cast(id,testo) {
         //inserisco in card il cast
         $(".flip-card[data-id=" + id + "]").find(".cast span").text(testo);
     }
 
+    //funzione che effettua una chiamata ajac per ottenere la lista dei generi
     function chiamata_ajax_genere(tipo) {
         $.ajax({
             "url": url_base + "genre/" + tipo + "/list",
@@ -332,6 +348,7 @@ $(document).ready(function() {
         })
     }
 
+    //funzione per popolare la lista generi
     function crea_lista_generi (tipo,arrayApi) {
         //verifico il tipo di ricerca cosi da tenere distinte le due liste di generi
         if (tipo == tipo_ricerca[0]) {
@@ -343,6 +360,7 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che gestisce che traduce i generi correnti dei film/seritv da ID a testo
     function gestisci_genere_card (id_generi_correnti,tipo,id) {
         //creo una variabile che identifica il tipo di array da ciclare
         var lista_generale_generi;
@@ -381,6 +399,7 @@ $(document).ready(function() {
         }
     }
 
+    //funzione che aggiunge i generi nelle card
     function aggiungi_genere(id,testo) {
         //inserisco il genere nella card
         $(".flip-card[data-id=" + id + "]").find(".genres span").text(testo);
