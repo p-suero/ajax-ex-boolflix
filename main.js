@@ -251,7 +251,7 @@ $(document).ready(function() {
         //designo una variabile con la trama vuota nel caso in cui non venga data dall'api
         var trama_fin = "";
         if (overview.length != 0) {
-            var caratteri_max = 150;
+            var caratteri_max = 70;
             //se i caratteri della descrizione sono maggiore di quelli della sottostringa aggiungo i puntini
             if (overview.length > caratteri_max) {
                 trama_fin =  overview.substr(0,caratteri_max) + "...";

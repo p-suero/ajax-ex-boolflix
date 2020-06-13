@@ -148,7 +148,7 @@ h2.titolo_ricerca {
 .flip-card .card-front {
     position: absolute;
     backface-visibility: hidden;
-     -webkit-backface-visibility: hidden; /* Safari */
+    -webkit-backface-visibility: hidden; /* Safari */
 }
 
 .card-back {
