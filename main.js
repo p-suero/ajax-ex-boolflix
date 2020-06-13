@@ -169,15 +169,15 @@ $(document).ready(function() {
     }
 
     //funzione che sostituisce il voto numerale con una stella
-    function star(voto_transform) {
+    function star(voto) {
         //desgigno la variabile stella
         var voto_finale = "";
         //se la variabile è diversa da 0, stampo le stelle
-        if (voto_transform != 0) {
+        if (voto != 0) {
             //stampo le stelle attraverso un ciclo for per determinare il numero di queste
             for (var i = 0; i < 5; i++) {
                 //se la i = al numero compreso nel voto, stampo la stella piena
-                if (i < voto_transform) {
+                if (i < voto) {
                     voto_finale += "<i class='fas fa-star'></i>";
                 } else {
                     //altrimenti una stella vuota
