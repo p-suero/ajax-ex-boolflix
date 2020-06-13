@@ -12,7 +12,6 @@ $(document).ready(function() {
 
     //template per il container dei film/serie
     var template_general_title = $("#container-movie-tv-template").html();
-    //preparo la funzione al fine di utilizzare il template con handlebars
     var template_general_title_function = Handlebars.compile(template_general_title);
 
     //Url base
@@ -21,12 +20,11 @@ $(document).ready(function() {
     //designo l'array contenente i tipo di ricerca eseguibili(vengono iserite nell'url di ajax)
     var tipo_ricerca = ["movie", "tv"];
 
-    //creo degli array per tipo nella quale successivamente inserisco la lista dei generi restituito dall' API
-    var generi_film_api = [];
-    var generi_serie_api = [];
+    //creo delle variabili generi per tipo nella quale successivamente inserisco la lista dei generi restituito dall' API
+    var generi_film_api;
+    var generi_serie_api;
 
     //**********FINE VARIABILI GLOBALI***********//
-
 
 
     //effettuo la chiamata ajax per ottenere la lista generi dei film
@@ -70,6 +68,10 @@ $(document).ready(function() {
         $("#header-right input").val("");
         //svuoto il contenitore del titolo e delle card
         $("#movie-tv-container *").remove();
+        //svuoto la select
+        $("select.genere").empty();
+        //aggiungo il display none alla select
+        $("select.genere").removeClass("active");
     }
 
     //funzione che effettua la chiamata ajax dei film e serieTV
@@ -109,7 +111,7 @@ $(document).ready(function() {
             //creo l'oggetto essenziale per handlebars
             var placeholder = {
                 "titolo_ricerca" : titolo_ricerca,
-                "quantità_risultati" : numero_risultati,
+                "numero_risultati": numero_risultati,
                 "tipo": tipo
             }
             //preparo la funzione handlebars
@@ -272,7 +274,7 @@ $(document).ready(function() {
     //funzione che setta i risultati della ricerca
     function set_info_ricerca(input,tipo) {
         //creo una variabile con il selettore del messaggio risultato trovato
-        var result_ok = $(".risultato-ricerca .result-ok")
+        var result_ok = $(".risultato-ricerca .result-ok");
         //creo una variabile con il selettore del messaggio "no-results"
         var no_result = $(".risultato-ricerca .no-result");
         //creo una variabile con il selettore degli eventuali figli del container FILM/SERIETV
@@ -282,7 +284,7 @@ $(document).ready(function() {
             //rimuovo la visibiltà al messaggio "nessun risultato"
             no_result.removeClass("active");
             //aggiungo il valore dell'input al messaggio
-            result_ok.find("span").text(input)
+            result_ok.find("span").text(input);
             //l'aggiungo al messaggio di "ricerca con successo"
             result_ok.addClass("active");
         } else if (!figli_container.hasClass(tipo_ricerca[0]) && !figli_container.hasClass(tipo_ricerca[1])) {
@@ -369,10 +371,10 @@ $(document).ready(function() {
         //verifico il tipo di ricerca cosi da tenere distinte le due liste di generi
         if (tipo == tipo_ricerca[0]) {
             //se il tipo è un film aggiungo i generi nell'array  FILM
-            generi_film_api.push(arrayApi);
+            generi_film_api = arrayApi;
         } else {
             //altrimenti nell'array SERIE TV
-            generi_serie_api.push(arrayApi);
+            generi_serie_api = arrayApi;
         }
     }
 
@@ -381,30 +383,35 @@ $(document).ready(function() {
         //creo una variabile che identifica il tipo di array da ciclare
         var lista_generale_generi;
         if (tipo == tipo_ricerca[0]) {
-            lista_generale_generi = generi_film_api[0];
+            lista_generale_generi = generi_film_api;
         } else {
-            lista_generale_generi = generi_serie_api[0];
+            lista_generale_generi = generi_serie_api;
         }
-        //se l'array restituito dall API resituisce almeno un ID-GENERE lo esamino
-        if (id_generi_correnti.length != 0) {
-            //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
-            var generi_correnti_convertiti = [];
-            //creo una variabile sentinella
-            var sentinella;
-            //avvio un ciclo for per scorrere i generi del titolo corrente
-            for (var i = 0; i < id_generi_correnti.length; i++) {
-                //questa variabile serve per fermare il ciclo seguente quando ottiene un riscontro
-                sentinella = false;
-                //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
-                for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
-                    //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-genere nell'array "generi correnti convertiti"
-                    if (id_generi_correnti[i] == lista_generale_generi[j].id) {
-                        generi_correnti_convertiti.push(lista_generale_generi[j].name);
-                        //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
-                        sentinella = true;
-                    }
+
+        //creo l'array dove inserire i generi di ogni titolo convertiti da ID a genere testuale
+        var generi_correnti_convertiti = [];
+        //creo una variabile sentinella
+        var sentinella;
+        //avvio un ciclo for per scorrere i generi del titolo corrente
+        for (var i = 0; i < id_generi_correnti.length; i++) {
+            //questa variabile serve per fermare il ciclo seguente quando ottiene un riscontro
+            sentinella = false;
+            //effettuo un altro ciclo for per cercare un riscontro tra l'id del genere corrente e gli id della lista di tutti i generi
+            for (var j = 0; j < lista_generale_generi.length && sentinella == false; j++) {
+                //se trovo un riscontro tra id del genere corrente rispetto alla lista generale inserisco il corrispettivo testo-genere nell'array "generi correnti convertiti"
+                if (id_generi_correnti[i] == lista_generale_generi[j].id) {
+                    generi_correnti_convertiti.push(lista_generale_generi[j].name);
+                    //pongo la variabile sentinella pari a true così da non far proseguire il ciclo una volta ottenuto il riscontro
+                    sentinella = true;
+                    //allo scorrere del ciclo popolo la select
+                    popola_select(lista_generale_generi[j].name);
                 }
             }
+        }
+        //setto l'option nel caso in cui dovesse essere selezionato il genere  film/serie corrente
+        cambia_option(id,generi_correnti_convertiti);
+        //se l'array dei generi correnti contiene almeno un genere effettuo le operazioni per inserirlo in pagina
+        if (generi_correnti_convertiti.length > 0 ) {
             //trasformo l'array in una stringa
             var stringa_generi_correnti = generi_correnti_convertiti.join(" - ");
             //aggiungo il genere alla card
@@ -419,5 +426,58 @@ $(document).ready(function() {
     function aggiungi_genere(id,testo) {
         //inserisco il genere nella card
         $(".flip-card[data-id=" + id + "]").find(".genres span").text(testo);
+    }
+
+    function popola_select(genere_corrente) {
+        //verifico se la select ha gia l'opzione "tutti i generi"
+        if ($("select.genere option[value]").length == 0) {
+            //inserisco l'option in pagina
+            $("select.genere").append("<option value>Tutti i generi</option>");
+        }
+        //se l'opzione genere non esiste l'aggiungo
+        if ($(".genere option[value='" + genere_corrente + "']").text() != genere_corrente) {
+            //inserisco l'option con il genere corrente in pagina
+            $("select.genere").append("<option value='" + genere_corrente + "'>" + genere_corrente + "</option>");
+        }
+
+        //una volta popolato la select, la mostro in pagina
+        $("select.genere").addClass("active");
+    }
+
+    function cambia_option(id,generi_correnti) {
+        //intercetto il cambio della select
+        $("select.genere").change(function() {
+            //se l'opzione è quella "seleziona tutti i generi" mostro tutti i titoli in pagina
+            if ($(this).val() == "") {
+                //seleziono tutti i titoli e li rendo visibili
+                $(".flip-card").show();
+                //aggiungo la visibilità al numero risultati del titolo della ricerca
+                $(".titolo_ricerca span").show();
+            } else if (generi_correnti.includes($(this).val())) {
+                //se il genere è compreso nel valore della option selezionata lo mostro in pagina
+                $(".flip-card[data-id='" + id + "']").show();
+                //imposto il display none al numero dei risultati nel h2
+                $(".titolo_ricerca span").hide();
+            } else {
+                //altrimenti nascondi l'elemento corrente
+                $(".flip-card[data-id='" + id + "']").hide();
+            }
+            //se lo scroll della pagina non è pari a 0 lo imposto a tale misura
+            if ($(document).scrollTop() != 0) {
+                $(document).scrollTop(0);
+            }
+            //se nessun film rientra tra il genere selezionato rimuovo il titolo della ricerca
+            if ($(".movie").children(".flip-card:visible").length == 0) {
+                $(".movie .titolo_ricerca").hide();
+            } else {
+                $(".movie .titolo_ricerca").show();
+            }
+            //se nessuna serie-tv rientra tra il genere selezionato rimuovo il titolo della ricerca
+            if ($(".tv").children(".flip-card:visible").length == 0) {
+                $(".tv .titolo_ricerca").hide();
+            } else {
+                $(".tv .titolo_ricerca").show();
+            }
+        })
     }
 })

@@ -19,6 +19,7 @@
                     <img src="img/logo.png" alt="Boolflix">
                 </div>
                 <div id="header-right">
+                    <select class="genere" name=""></select>
                     <input type="text" placeholder="Cerca un film, serie TV...">
                     <button id="search-button">Cerca</button>
                 </div>
@@ -58,7 +59,7 @@
             <img src="img/flag_{{bandiera}}.png" alt="{{bandiera}}">
         </script>
         <script id="container-movie-tv-template" type="text/x-handlebars-template">
-            <div class={{tipo}}><h2 class="titolo_ricerca">{{titolo_ricerca}}({{quantità_risultati}})</h2></div>
+            <div class={{tipo}}><h2 class="titolo_ricerca">{{titolo_ricerca}}<span>({{numero_risultati}})</span></h2></div>
         </script>
         <!-- link js -->
         <script src="main.js" charset="utf-8"></script>

@@ -41,6 +41,10 @@ main {
     align-items: center;
 }
 
+#header-left img {
+    margin-bottom: 10px;
+}
+
 #header-right {
     justify-content: flex-end;
 }
@@ -50,6 +54,19 @@ header .container {
     justify-content: space-between;
 }
 
+header select {
+    margin-right: 20px;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 5px;
+    display: none;
+}
+
+header select.active {
+    display: inline-block;
+
+}
+
 input,
 button {
     background-color: rgb(20, 20, 20);
@@ -57,7 +74,7 @@ button {
     border: 2px solid white;
     padding: 10px;
     color: white;
-    margin-left: 5px;
+    margin-left:5px;
     font-size: 15px;
     border-radius: 5px;
 }
@@ -89,9 +106,9 @@ button#search-button {
 
 h2.titolo_ricerca {
     width: 100%;
-    text-align: center;
     margin: 30px 0 15px 0;
     font-size: 15px;
+    font-weight: 500;
 }
 
 .movie, .tv {
@@ -186,17 +203,24 @@ li.d_none {
     }
 
     header {
-        height: 150px;
+        height: 175px;
+        padding: 10px 0;
     }
 
     main {
-        padding-top: 150px;
+        padding-top: 175px;
     }
 
     #header-left,
     #header-right {
         width: 100%;
         justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    header select {
+        margin: 0 0 10px 10px;
+        margin-right: 10px;
     }
 
     header .container {
