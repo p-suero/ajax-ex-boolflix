@@ -113,7 +113,7 @@ $(document).ready(function() {
                 "titolo_ricerca" : titolo_ricerca,
                 "numero_risultati": numero_risultati,
                 "tipo": tipo
-            }
+            };
             //preparo la funzione handlebars
             var html_finale = template_general_title_function(placeholder);
             //stampo in pagina quanto formulato
@@ -288,11 +288,10 @@ $(document).ready(function() {
             //l'aggiungo al messaggio di "ricerca con successo"
             result_ok.addClass("active");
         } else if (!figli_container.hasClass(tipo_ricerca[0]) && !figli_container.hasClass(tipo_ricerca[1])) {
-            //altrimenti visualizzo un messaggio di "nessun risultato"
             //rimuovo la visibiltà al messaggio di "ricerca ok"
             result_ok.removeClass("active");
             //aggiungo la specifica della ricerca effettuata al messaggio "non result"
-            no_result.find("span").text(input)
+            no_result.find("span").text(input);
             //l'aggiungo al messaggio di "nessun risultato"
             no_result.addClass("active");
         }
@@ -358,7 +357,10 @@ $(document).ready(function() {
                 "language":"it",
             },
             "success": function(data) {
+                //invoco la funzione per creare le liste dei generi
                 crea_lista_generi(tipo,data.genres);
+                //invoco la funzione che gestisce la selezione di tutti i generi dalla select
+                select_all();
             },
             "error": function() {
                 alert("Si è verificato un errore");
@@ -444,8 +446,7 @@ $(document).ready(function() {
         $("select.genere").addClass("active");
     }
 
-    function cambia_option(id,generi_correnti) {
-        //intercetto il cambio della select
+    function select_all() {
         $("select.genere").change(function() {
             //se l'opzione è quella "seleziona tutti i generi" mostro tutti i titoli in pagina
             if ($(this).val() == "") {
@@ -453,12 +454,19 @@ $(document).ready(function() {
                 $(".flip-card").show();
                 //aggiungo la visibilità al numero risultati del titolo della ricerca
                 $(".titolo_ricerca span").show();
-            } else if (generi_correnti.includes($(this).val())) {
+            }
+        })
+    }
+
+    function cambia_option(id,generi_correnti) {
+        //intercetto il cambio della select
+        $("select.genere").change(function() {
+            if (generi_correnti.includes($(this).val())) {
                 //se il genere è compreso nel valore della option selezionata lo mostro in pagina
                 $(".flip-card[data-id='" + id + "']").show();
                 //imposto il display none al numero dei risultati nel h2
                 $(".titolo_ricerca span").hide();
-            } else {
+            } else if ($(this).val() != "") {
                 //altrimenti nascondi l'elemento corrente
                 $(".flip-card[data-id='" + id + "']").hide();
             }
@@ -467,17 +475,17 @@ $(document).ready(function() {
                 $(document).scrollTop(0);
             }
             //se nessun film rientra tra il genere selezionato rimuovo il titolo della ricerca
-            if ($(".movie").children(".flip-card:visible").length == 0) {
-                $(".movie .titolo_ricerca").hide();
-            } else {
-                $(".movie .titolo_ricerca").show();
-            }
-            //se nessuna serie-tv rientra tra il genere selezionato rimuovo il titolo della ricerca
-            if ($(".tv").children(".flip-card:visible").length == 0) {
-                $(".tv .titolo_ricerca").hide();
-            } else {
-                $(".tv .titolo_ricerca").show();
-            }
+            hide_title("movie");
+            // nessuna serie-tv rientra tra il genere selezionato rimuovo il titolo della ricerca
+            hide_title("tv");
         })
+    }
+
+    function hide_title(tipo) {
+        if ($("." + tipo).children(".flip-card:visible").length == 0) {
+            $("." + tipo + " .titolo_ricerca").hide();
+        } else {
+            $("." + tipo + " .titolo_ricerca").show();
+        }
     }
 })

@@ -6,7 +6,7 @@
 
 /* MACRO LAYOUT */
 body {
-    background-image: url(img/bk_img.jpg);
+    background-image: url(../img/bk_img.jpg);
     background-size: cover;
     background-attachment: fixed;
     font-family: 'Roboto', sans-serif;
