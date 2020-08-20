@@ -489,3 +489,8 @@ $(document).ready(function() {
         }
     }
 })
+
+//setto il popup all'apertura della pagina
+$("#remove-popup").click(function() {
+    $(this).closest("#wrapper-popup").remove();
+})
