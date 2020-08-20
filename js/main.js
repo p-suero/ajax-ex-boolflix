@@ -145,7 +145,7 @@ $(document).ready(function() {
             "voto" : star(voto_transform(elemento_corrente.vote_average)),
             "overview" : overview(elemento_corrente.overview),
             "id" : elemento_corrente.id,
-        }
+        };
         //inserisco le proprietà dell'oggetto nella funzione di Handlebars
         var html_finale = template_function(context);
         //inserisco i valori in html
