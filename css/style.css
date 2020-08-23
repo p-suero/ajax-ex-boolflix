@@ -36,7 +36,6 @@ main {
 #header-left,
 #header-right {
     height: 100%;
-    width: 40%;
     display: flex;
     align-items: center;
 }
