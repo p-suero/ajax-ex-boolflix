@@ -249,6 +249,7 @@ li.d_none {
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
+        align-items: baseline;
     }
 
     header select {
