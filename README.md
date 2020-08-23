@@ -4,6 +4,8 @@
 <div style="
     text-align: center;
 ">
-<p><strong> Api powered by: </strong></p>
+<p style="
+    text-align: center;
+"><strong> Api powered by: </strong></p>
 <img src="https://github.com/p-suero/ajax-ex-boolflix/blob/master/imgreadme/ezgif-2-734f7f38526e.gif" alt="">
 </div>
